@@ -10,7 +10,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           <div className="col-span-1 md:col-span-2">
             <Link to="/" className="flex items-center gap-3 mb-6">
-              <img src="/logo.png" alt="ACM KFUEIT Logo" className="h-12 w-auto object-contain" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+              <img src="476164860_956447869924460_6236266839002281023_n.jpg" alt="ACM KFUEIT Logo" className="h-12 w-auto object-contain" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
               <span className="font-bold text-xl text-slate-900 tracking-tight">
                 ACM <span className="text-blue-600">KFUEIT</span>
               </span>
@@ -44,16 +44,30 @@ export function Footer() {
                 <span>KFUEIT, Abu Dhabi Rd, Rahim Yar Khan, Punjab, Pakistan</span>
               </li>
             </ul>
+
             <div className="flex gap-4 mt-8">
+              {/* Instagram */}
               <a href="https://www.instagram.com/acm.kfueitt/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 hover:bg-gradient-to-tr hover:from-yellow-400 hover:via-red-500 hover:to-purple-500 hover:text-white transition-all shadow-sm">
                 <Instagram size={18} />
               </a>
+
+              {/* Facebook */}
               <a href="https://www.facebook.com/ACMKfueitStudentChapter" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 hover:bg-blue-600 hover:text-white transition-all shadow-sm">
                 <Facebook size={18} />
               </a>
-              <a href="https://www.tiktok.com/@acm.kfueit" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 hover:bg-black hover:text-white transition-all shadow-sm">
-                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-music-2"><circle cx="8" cy="18" r="4"/><path d="M12 18V2l7 4"/></svg>
+
+              {/* LinkedIn */}
+              <a
+                href="https://www.linkedin.com/posts/acm-kfueit-student-chapter_acm-acmkfueit-kfueit-activity-7400566654943969280-rM7s?utm_source=share&utm_medium=member_android&rcm=ACoAAE-oBD4BmPwJjU1Jsh0T6sbYJ4iWHX1T6e4"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 hover:bg-[#0077b5] hover:text-white transition-all shadow-sm"
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                  <path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM0 8h5v16H0V8zm7.5 0h4.8v2.2h.1c.67-1.2 2.3-2.5 4.7-2.5 5 0 5.9 3.3 5.9 7.6V24h-5v-7.2c0-1.7 0-3.9-2.4-3.9s-2.8 1.9-2.8 3.8V24h-5V8z"/>
+                </svg>
               </a>
+
             </div>
           </div>
         </div>
