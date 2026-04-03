@@ -53,8 +53,8 @@ export function Home() {
               </div>
               
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 leading-[1.1] text-slate-900">
-                Connecting Minds <br className="hidden md:block" />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500">, Creating the Future</span>
+                Connecting Minds,<br className="hidden md:block" />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500">Creating the Future</span>
               </h1>
               
               <p className="text-lg md:text-xl text-slate-600 mb-8 leading-relaxed">
