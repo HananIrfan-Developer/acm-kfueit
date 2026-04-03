@@ -53,8 +53,8 @@ export function Home() {
               </div>
               
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 leading-[1.1] text-slate-900">
-                Extraordinary <br className="hidden md:block" />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500">learning & innovation</span>
+                Connecting Minds <br className="hidden md:block" />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500">, Creating the Future</span>
               </h1>
               
               <p className="text-lg md:text-xl text-slate-600 mb-8 leading-relaxed">
@@ -78,7 +78,7 @@ export function Home() {
 
               <div className="mt-10 flex items-center gap-6 text-sm font-medium text-slate-500">
                 <div className="flex items-center gap-2">
-                  <Code size={18} className="text-blue-600" /> Development
+                  <Code size={18} className="text-blue-600" /> Collaboration
                 </div>
                 <div className="flex items-center gap-2">
                   <Users size={18} className="text-teal-500" /> Networking
@@ -113,7 +113,7 @@ export function Home() {
                   <Users size={24} />
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-slate-900">500+</div>
+                  <div className="text-2xl font-bold text-slate-900">72+</div>
                   <div className="text-sm font-medium text-slate-500">Active Members</div>
                 </div>
               </motion.div>
@@ -134,11 +134,11 @@ export function Home() {
             className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 p-8 grid grid-cols-2 md:grid-cols-4 gap-8 text-center"
           >
             <div>
-              <div className="text-3xl md:text-4xl font-bold text-slate-900 mb-1">500+</div>
+              <div className="text-3xl md:text-4xl font-bold text-slate-900 mb-1">72+</div>
               <div className="text-sm text-slate-500 font-medium">Total Members</div>
             </div>
             <div>
-              <div className="text-3xl md:text-4xl font-bold text-slate-900 mb-1">50+</div>
+              <div className="text-3xl md:text-4xl font-bold text-slate-900 mb-1">10+</div>
               <div className="text-sm text-slate-500 font-medium">Events Hosted</div>
             </div>
             <div>
@@ -246,7 +246,7 @@ export function Home() {
                 transition={{ duration: 0.6 }}
               >
                 <div className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">How it works</div>
-                <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">One click for you</h2>
+                <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">How Our Platform Works</h2>
                 <p className="text-slate-600 text-lg leading-relaxed">
                   Join our community to discover your dream career path, where innovation and collaboration meet.
                 </p>
