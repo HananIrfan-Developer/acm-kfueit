@@ -1,0 +1,130 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: events
+    // Document ID: auto-generated
+    // Fields:
+    //   - title: string (required)
+    //   - description: string (required)
+    //   - date: string (required, ISO 8601)
+    //   - imageUrl: string (optional)
+    //   - status: string (required, 'upcoming' or 'completed')
+    //   - createdAt: string (required, ISO 8601)
+    //
+    // Collection: members
+    // Document ID: auto-generated
+    // Fields:
+    //   - name: string (required)
+    //   - role: string (required)
+    //   - skills: list of strings (optional)
+    //   - imageUrl: string (optional)
+    //   - socialLinks: map (optional)
+    //   - createdAt: string (required, ISO 8601)
+    //
+    // Collection: messages
+    // Document ID: auto-generated
+    // Fields:
+    //   - name: string (required)
+    //   - email: string (required)
+    //   - message: string (required)
+    //   - createdAt: string (required, ISO 8601)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      // Allow the specific user email to act as admin
+      return isAuthenticated() && request.auth.token.email == "hananirfan81@gmail.com";
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function isValidString(field, minLen, maxLen) {
+      return request.resource.data[field] is string &&
+        request.resource.data[field].size() >= minLen &&
+        request.resource.data[field].size() <= maxLen;
+    }
+
+    function isValidEmail(email) {
+      return email is string &&
+        email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidDateString(dateStr) {
+      return dateStr is string &&
+        dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*Z?$");
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidEvent() {
+      return hasRequiredFields(['title', 'description', 'date', 'status', 'createdAt']) &&
+             isValidString('title', 1, 100) &&
+             isValidString('description', 1, 5000) &&
+             isValidDateString(request.resource.data.date) &&
+             request.resource.data.status in ['upcoming', 'completed'] &&
+             isValidDateString(request.resource.data.createdAt) &&
+             (!('imageUrl' in request.resource.data) || request.resource.data.imageUrl is string);
+    }
+
+    function isValidMember() {
+      return hasRequiredFields(['name', 'role', 'createdAt']) &&
+             isValidString('name', 1, 100) &&
+             isValidString('role', 1, 100) &&
+             isValidDateString(request.resource.data.createdAt) &&
+             (!('skills' in request.resource.data) || request.resource.data.skills is list) &&
+             (!('imageUrl' in request.resource.data) || request.resource.data.imageUrl is string) &&
+             (!('socialLinks' in request.resource.data) || request.resource.data.socialLinks is map);
+    }
+
+    function isValidMessage() {
+      return hasRequiredFields(['name', 'email', 'message', 'createdAt']) &&
+             isValidString('name', 1, 100) &&
+             isValidEmail(request.resource.data.email) &&
+             isValidString('message', 1, 2000) &&
+             isValidDateString(request.resource.data.createdAt);
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /events/{eventId} {
+      allow read: if true; // Publicly readable
+      allow create: if isAdmin() && isValidEvent();
+      allow update: if isAdmin() && isValidEvent();
+      allow delete: if isAdmin();
+    }
+
+    match /members/{memberId} {
+      allow read: if true; // Publicly readable
+      allow create: if isAdmin() && isValidMember();
+      allow update: if isAdmin() && isValidMember();
+      allow delete: if isAdmin();
+    }
+
+    match /messages/{messageId} {
+      allow read: if isAdmin(); // Only admin can read messages
+      allow create: if isValidMessage(); // Anyone can submit a message
+      allow update: if false; // Messages cannot be updated
+      allow delete: if isAdmin();
+    }
+  }
+}

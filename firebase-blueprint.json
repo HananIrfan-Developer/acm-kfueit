@@ -1,0 +1,120 @@
+{
+  "entities": {
+    "Event": {
+      "title": "Event",
+      "description": "An event organized by the ACM KFUEIT Chapter.",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "The title of the event."
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description of the event."
+        },
+        "date": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The date and time of the event (ISO string)."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL of the event banner/image."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["upcoming", "completed"],
+          "description": "Status of the event."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp."
+        }
+      },
+      "required": ["title", "description", "date", "status", "createdAt"]
+    },
+    "Member": {
+      "title": "Member",
+      "description": "A member of the ACM KFUEIT Chapter.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Full name of the member."
+        },
+        "role": {
+          "type": "string",
+          "description": "Role in the chapter (e.g., President, Member)."
+        },
+        "skills": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of skills or interests."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL of the member's profile image."
+        },
+        "socialLinks": {
+          "type": "object",
+          "properties": {
+            "linkedin": { "type": "string" },
+            "github": { "type": "string" },
+            "twitter": { "type": "string" }
+          },
+          "description": "Social media links."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp."
+        }
+      },
+      "required": ["name", "role", "createdAt"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "A contact message submitted through the website.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the sender."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Email of the sender."
+        },
+        "message": {
+          "type": "string",
+          "description": "The message content."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp."
+        }
+      },
+      "required": ["name", "email", "message", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/events/{eventId}": {
+      "schema": { "$ref": "#/entities/Event" },
+      "description": "Stores all events."
+    },
+    "/members/{memberId}": {
+      "schema": { "$ref": "#/entities/Member" },
+      "description": "Stores all members."
+    },
+    "/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/Message" },
+      "description": "Stores all contact messages."
+    }
+  }
+}
