@@ -254,10 +254,11 @@ export function Home() {
 
               <div className="space-y-8">
                 {[
-                  { title: "Find your passion", desc: "Explore various fields of computing and find what excites you the most.", icon: <Globe size={24} /> },
-                  { title: "Join a team", desc: "Collaborate with like-minded individuals on exciting projects.", icon: <Users size={24} /> },
-                  { title: "Build projects", desc: "Turn your ideas into reality with hands-on development experience.", icon: <Code size={24} /> },
-                  { title: "Share knowledge", desc: "Participate in workshops and seminars to learn and grow together.", icon: <Zap size={24} /> }
+                  { title: "Organize Events", desc: "We help coordinate and manage university events efficiently, making it easier to plan, schedule, and execute activities across different departments and societies.", icon: <Globe size={24} /> },
+                  { title: "Host Webinars & Sessions", desc: "Our platform supports webinars, workshops, and online sessions where students and professionals can share knowledge, learn new skills, and engage with a wider audience.", icon: <Users size={24} /> },
+                  { title: "Collaborate with Societies", desc: "We enable collaboration between different university societies, encouraging teamwork, shared initiatives, and cross-disciplinary projects.", icon: <Code size={24} /> },
+      { title: "Grow Together", desc: "By bringing students, societies, and external partners onto one platform, we foster a community built on innovation, collaboration, and continuous learning.", icon: <Code size={24} /> },
+                  { title: "Streamlined Communication", desc: "Stay connected through centralized communication channels that keep all members updated about events, collaborations, and announcements.", icon: <Zap size={24} /> }
                 ].map((item, i) => (
                   <motion.div 
                     key={i}
