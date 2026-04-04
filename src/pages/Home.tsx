@@ -118,7 +118,7 @@ export function Home() {
 
               <div className="mt-10 flex items-center gap-6 text-sm font-medium text-slate-500">
                 <div className="flex items-center gap-2">
-                  <Code size={18} className="text-blue-600" /> Development
+                  <Code size={18} className="text-blue-600" /> Collaborator
                 </div>
                 <div className="flex items-center gap-2">
                   <Users size={18} className="text-teal-500" /> Networking
@@ -286,18 +286,19 @@ export function Home() {
                 transition={{ duration: 0.6 }}
               >
                 <div className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">How it works</div>
-                <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">One click for you</h2>
+                <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">How Our Platoform Works</h2>
                 <p className="text-slate-600 text-lg leading-relaxed">
-                  Join our community to discover your dream career path, where innovation and collaboration meet.
+                  Building a connected community through events and innovation.
                 </p>
               </motion.div>
 
               <div className="space-y-8">
                 {[
-                  { title: "Find your passion", desc: "Explore various fields of computing and find what excites you the most.", icon: <Globe size={24} /> },
-                  { title: "Join a team", desc: "Collaborate with like-minded individuals on exciting projects.", icon: <Users size={24} /> },
-                  { title: "Build projects", desc: "Turn your ideas into reality with hands-on development experience.", icon: <Code size={24} /> },
-                  { title: "Share knowledge", desc: "Participate in workshops and seminars to learn and grow together.", icon: <Zap size={24} /> }
+                  { title: "Organize Events", desc: "We help coordinate and manage university events efficiently, making it easier to plan, schedule, and execute activities across different departments and societies.", icon: <Globe size={24} /> },
+                  { title: "Host Webinars & Sessions", desc: "Our platform supports webinars, workshops, and online sessions where students and professionals can share knowledge, learn new skills, and engage with a wider audience.", icon: <Users size={24} /> },
+                  { title: "Collaborate with Societies", desc: "We enable collaboration between different university societies, encouraging teamwork, shared initiatives, and cross-disciplinary projects.", icon: <Code size={24} /> },
+      { title: "Grow Together", desc: "By bringing students, societies, and external partners onto one platform, we foster a community built on innovation, collaboration, and continuous learning.", icon: <Code size={24} /> },
+                  { title: "Streamlined Communication", desc: "Stay connected through centralized communication channels that keep all members updated about events, collaborations, and announcements.", icon: <Zap size={24} /> }
                 ].map((item, i) => (
                   <motion.div 
                     key={i}
@@ -369,11 +370,7 @@ export function Home() {
                     "{testimonials[currentTestimonial].content}"
                   </p>
                   <div className="flex flex-col items-center justify-center">
-                    <img 
-                      src={testimonials[currentTestimonial].image} 
-                      alt={testimonials[currentTestimonial].author} 
-                      className="w-16 h-16 rounded-full border-2 border-blue-100 mb-4"
-                    />
+                   
                     <h4 className="text-lg font-bold text-slate-900">{testimonials[currentTestimonial].author}</h4>
                     <p className="text-slate-500 text-sm">{testimonials[currentTestimonial].role}</p>
                   </div>
