@@ -48,6 +48,13 @@ export function Home() {
     fetchEvents();
   }, []);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   const nextTestimonial = () => {
     setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
   };
@@ -128,7 +135,7 @@ export function Home() {
             >
               <div className="relative aspect-[4/3] sm:aspect-[4/3] lg:aspect-[4/5] xl:aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl border border-white/20">
                 <img 
-                  src="https://storage.googleapis.com/aistudio-user-content/0314%206355102%0A%0Aacm%40kfueit.edu.%20here%20is%20phone%20number%20and%20email%20and%20i%20wan%20these%20colors%20in%20this%20entire%20website%20%F0%9F%8E%A8%20White%20Theme%20Color%20System%20%28Recommended%29%0A%F0%9F%8F%A0%20Background%20%26%20Surfaces%0AMain%20Background%3A%20%23FFFFFF%20%28pure%20white%29%0ASection%20Background%20%28alternate%29%3A%20%23F8FAFC%20%28very%20light%20gray-blue%29%0ACards%20%2F%20Containers%3A%20%23FFFFFF%20with%20soft%20shadow%0A%F0%9F%8E%AF%20Primary%20Colors%0APrimary%20Blue%20%28Main%20Brand%20Color%29%3A%20%232563EB%0AHover%20Blue%3A%20%231D4ED8%0ALight%20Blue%20Tint%3A%20%23EFF6FF%0A%0A%F0%9F%91%89%20Used%20for%3A%0A%0AButtons%0ALinks%0AActive%20states%0AHighlights%0A%F0%9F%8C%BF%20Secondary%20%2F%20Accent%20Colors%0ATeal%20Accent%3A%20%2314B8A6%0AGreen%20Success%3A%20%2322C55E%0AAmber%20Warning%3A%20%23F59E0B%0ARed%20Error%3A%20%23EF4444%0A%0A%F0%9F%91%89%20Used%20for%3A%0A%0AStatus%20badges%0ANotifications%0AEvent%20tags%0A%F0%9F%93%9D%20Text%20Colors%0APrimary%20Text%3A%20%230F172A%20%28dark%20navy%29%0ASecondary%20Text%3A%20%23475569%0AMuted%20Text%3A%20%2394A3B8%0A%F0%9F%A7%B1%20Borders%20%26%20Dividers%0ABorder%20Color%3A%20%23E2E8F0%0ADivider%20Color%3A%20%23F1F5F9%0A%F0%9F%8C%9F%20Shadows%20%28for%20depth%29%0A%0AUse%20soft%20shadows%20to%20avoid%20flat%20UI%3A%0A%0ALight%20Shadow%3A%0A0%201px%203px%20rgba%280%2C0%2C0%2C0.1%29%0AMedium%20Shadow%3A%0A0%204px%2012px%20rgba%280%2C0%2C0%2C0.08%29%0A%F0%9F%8E%A8%20UI%20Style%20Guidelines%0AUse%20white%20space%20generously%20%28clean%20layout%29%0ACards%20should%20have%3A%0AWhite%20background%0ARounded%20corners%20%288%E2%80%9316px%29%0ASubtle%20shadow%0AButtons%3A%0APrimary%3A%20Blue%20background%20%28%232563EB%29%0AHover%3A%20darker%20blue%20%28%231D4ED8%29%0AUse%20accent%20colors%20sparingly%20%28for%20highlights%20only%29%0A%F0%9F%A7%A0%20Example%20UI%20Feel%0AMinimal%0AClean%0AAcademic%20%2B%20Tech%20blend%0AProfessional%20like%20university%20or%20corporate%20portals%0AEasy%20to%20read%20and%20navigate%20and%20when%20we%20login%20and%20sign%20up%20we%20face%20an%20error%20firebase%20auth%20error%20invalid%20creditail%20and%20add%20this%20mage%20in%20bg%20of%20the%20hero%20section%20of%20of%20home%20page%20and%20the%20h1%20tag%20text%20is%20not%20look%20good/image-1.jpeg"
+                  src="https://vui.unsplash.com/resize?height=256&quality=60&type=auto&url=https%3A%2F%2Fsearched-images.s3.us-west-2.amazonaws.com%2F35a9c1c5-910f-4a41-b3d6-0de03519d3e3%3FX-Amz-Algorithm%3DAWS4-HMAC-SHA256%26X-Amz-Credential%3DAKIAQ4GRIA4QTG2PSHUB%252F20260404%252Fus-west-2%252Fs3%252Faws4_request%26X-Amz-Date%3D20260404T093111Z%26X-Amz-Expires%3D86400%26X-Amz-SignedHeaders%3Dhost%26X-Amz-Signature%3D52d4c3e84db6fea6309ba377df546a9e054cba92a1303bf70ef03401d0aba19a&sign=zPRtupb1pNCu80FdbcOP3a3Y4Fvz2QQRTCQzc9fJydw"
                   alt="ACM Team"
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
