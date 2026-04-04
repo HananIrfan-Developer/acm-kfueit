@@ -16,7 +16,7 @@ const testimonials = [
   {
     id: 2,
     content: "The leadership opportunities provided by the chapter are unparalleled. I learned how to manage teams, organize large-scale events, and network with industry professionals.",
-    author: "Hanan Irfan",
+    author: "Fatima Noor",
     role: "Computer Science Graduate",
     image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Fatima"
   },
@@ -89,7 +89,7 @@ export function Home() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
                 </span>
-               ACM KFUEIT Chapter
+                ACM KFUEIT CHAPTER
               </div>
               
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 leading-[1.1] text-slate-900">
@@ -118,7 +118,7 @@ export function Home() {
 
               <div className="mt-10 flex items-center gap-6 text-sm font-medium text-slate-500">
                 <div className="flex items-center gap-2">
-                  <Code size={18} className="text-blue-600" /> Collaborator
+                  <Code size={18} className="text-blue-600" /> Development
                 </div>
                 <div className="flex items-center gap-2">
                   <Users size={18} className="text-teal-500" /> Networking
@@ -228,7 +228,7 @@ export function Home() {
                 >
                   <div className="aspect-[4/3] overflow-hidden relative m-3 rounded-2xl flex-shrink-0">
                     <img 
-                      src={event.imageUrl || `https://picsum.photos/seed/${event.id}/800/600`} 
+                      src={(event.imageUrls && event.imageUrls.length > 0) ? event.imageUrls[0] : (event.imageUrl || `https://picsum.photos/seed/${event.id}/800/600`)} 
                       alt={event.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                       referrerPolicy="no-referrer"
@@ -286,9 +286,9 @@ export function Home() {
                 transition={{ duration: 0.6 }}
               >
                 <div className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">How it works</div>
-                <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">How Our Platoform Works</h2>
+                <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">One click for you</h2>
                 <p className="text-slate-600 text-lg leading-relaxed">
-                  Building a connected community through events and innovation.
+                  Join our community to discover your dream career path, where innovation and collaboration meet.
                 </p>
               </motion.div>
 
@@ -297,7 +297,7 @@ export function Home() {
                   { title: "Organize Events", desc: "We help coordinate and manage university events efficiently, making it easier to plan, schedule, and execute activities across different departments and societies.", icon: <Globe size={24} /> },
                   { title: "Host Webinars & Sessions", desc: "Our platform supports webinars, workshops, and online sessions where students and professionals can share knowledge, learn new skills, and engage with a wider audience.", icon: <Users size={24} /> },
                   { title: "Collaborate with Societies", desc: "We enable collaboration between different university societies, encouraging teamwork, shared initiatives, and cross-disciplinary projects.", icon: <Code size={24} /> },
-      { title: "Grow Together", desc: "By bringing students, societies, and external partners onto one platform, we foster a community built on innovation, collaboration, and continuous learning.", icon: <Code size={24} /> },
+                  { title: "Grow Together", desc: "By bringing students, societies, and external partners onto one platform, we foster a community built on innovation, collaboration, and continuous learning.", icon: <Code size={24} /> },
                   { title: "Streamlined Communication", desc: "Stay connected through centralized communication channels that keep all members updated about events, collaborations, and announcements.", icon: <Zap size={24} /> }
                 ].map((item, i) => (
                   <motion.div 
@@ -370,7 +370,6 @@ export function Home() {
                     "{testimonials[currentTestimonial].content}"
                   </p>
                   <div className="flex flex-col items-center justify-center">
-                   
                     <h4 className="text-lg font-bold text-slate-900">{testimonials[currentTestimonial].author}</h4>
                     <p className="text-slate-500 text-sm">{testimonials[currentTestimonial].role}</p>
                   </div>

@@ -61,10 +61,10 @@ export function AdminDashboard() {
   const [editingId, setEditingId] = useState<string | null>(null);
 
   // Form states
-  const [eventForm, setEventForm] = useState({ title: '', description: '', date: '', imageUrl: '', status: 'upcoming' });
+  const [eventForm, setEventForm] = useState({ title: '', description: '', date: '', imageUrl: '', imageUrls: [] as string[], status: 'upcoming' });
   const [memberForm, setMemberForm] = useState({ name: '', role: '', team: 'Core', registrationNumber: '', skills: '', imageUrl: '', tiktok: '', instagram: '', youtube: '' });
   
-  const [eventImageFile, setEventImageFile] = useState<File | null>(null);
+  const [eventImageFiles, setEventImageFiles] = useState<File[]>([]);
   const [memberImageFile, setMemberImageFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -97,22 +97,27 @@ export function AdminDashboard() {
     e.preventDefault();
     setIsUploading(true);
     try {
-      let finalImageUrl = eventForm.imageUrl;
+      let finalImageUrls = [...eventForm.imageUrls];
       
-      if (eventImageFile) {
+      if (eventImageFiles.length > 0) {
         try {
-          finalImageUrl = await compressImage(eventImageFile);
+          const newImageUrls = await Promise.all(eventImageFiles.map(file => compressImage(file)));
+          finalImageUrls = [...finalImageUrls, ...newImageUrls];
         } catch (uploadError) {
           console.error("Image compression failed:", uploadError);
-          toast.error("Failed to process image. Please try again.");
+          toast.error("Failed to process images. Please try again.");
           setIsUploading(false);
           return;
         }
       }
 
+      // For backward compatibility, keep the first image as imageUrl if available
+      const firstImageUrl = finalImageUrls.length > 0 ? finalImageUrls[0] : eventForm.imageUrl;
+
       const data = {
         ...eventForm,
-        imageUrl: finalImageUrl,
+        imageUrl: firstImageUrl,
+        imageUrls: finalImageUrls,
         date: new Date(eventForm.date).toISOString(),
         createdAt: new Date().toISOString()
       };
@@ -209,18 +214,26 @@ export function AdminDashboard() {
   const openEventModal = (event?: any) => {
     if (event) {
       setEditingId(event.id);
+      
+      // Handle backward compatibility where only imageUrl exists
+      let existingImageUrls = event.imageUrls || [];
+      if (existingImageUrls.length === 0 && event.imageUrl) {
+        existingImageUrls = [event.imageUrl];
+      }
+
       setEventForm({
         title: event.title,
         description: event.description,
         date: event.date.split('T')[0],
         imageUrl: event.imageUrl || '',
+        imageUrls: existingImageUrls,
         status: event.status
       });
     } else {
       setEditingId(null);
-      setEventForm({ title: '', description: '', date: '', imageUrl: '', status: 'upcoming' });
+      setEventForm({ title: '', description: '', date: '', imageUrl: '', imageUrls: [], status: 'upcoming' });
     }
-    setEventImageFile(null);
+    setEventImageFiles([]);
     setIsEventModalOpen(true);
   };
 
@@ -419,22 +432,42 @@ export function AdminDashboard() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-slate-700">Event Image</label>
-                <div className="flex items-center gap-4">
-                  {eventForm.imageUrl && !eventImageFile && (
-                    <img src={eventForm.imageUrl} alt="Preview" className="w-16 h-16 object-cover rounded-lg border border-slate-200" />
-                  )}
-                  {eventImageFile && (
-                    <div className="w-16 h-16 bg-blue-50 rounded-lg border border-blue-200 flex items-center justify-center text-blue-600 text-xs text-center p-1 overflow-hidden">
-                      {eventImageFile.name}
-                    </div>
-                  )}
-                  <label className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg border border-slate-200 transition-colors">
+                <label className="block text-sm font-medium mb-1 text-slate-700">Event Images</label>
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-wrap gap-4">
+                    {eventForm.imageUrls.map((url, idx) => (
+                      <div key={`existing-${idx}`} className="relative group">
+                        <img src={url} alt={`Preview ${idx}`} className="w-16 h-16 object-cover rounded-lg border border-slate-200" />
+                        <button 
+                          type="button"
+                          onClick={() => setEventForm({...eventForm, imageUrls: eventForm.imageUrls.filter((_, i) => i !== idx)})}
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X size={12} />
+                        </button>
+                      </div>
+                    ))}
+                    {eventImageFiles.map((file, idx) => (
+                      <div key={`new-${idx}`} className="relative group">
+                        <div className="w-16 h-16 bg-blue-50 rounded-lg border border-blue-200 flex items-center justify-center text-blue-600 text-xs text-center p-1 overflow-hidden">
+                          {file.name}
+                        </div>
+                        <button 
+                          type="button"
+                          onClick={() => setEventImageFiles(eventImageFiles.filter((_, i) => i !== idx))}
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X size={12} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg border border-slate-200 transition-colors w-max">
                     <Upload size={16} />
-                    <span className="text-sm font-medium">Upload Image</span>
-                    <input type="file" accept="image/*" className="hidden" onChange={e => {
-                      if (e.target.files && e.target.files[0]) {
-                        setEventImageFile(e.target.files[0]);
+                    <span className="text-sm font-medium">Upload Images</span>
+                    <input type="file" accept="image/*" multiple className="hidden" onChange={e => {
+                      if (e.target.files) {
+                        setEventImageFiles([...eventImageFiles, ...Array.from(e.target.files)]);
                       }
                     }} />
                   </label>

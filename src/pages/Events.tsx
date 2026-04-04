@@ -169,7 +169,7 @@ function EventCard({ event, index, isPast = false }: { event: any, index: number
       <div className="aspect-[4/3] overflow-hidden relative">
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent z-10"></div>
         <img 
-          src={event.imageUrl || `https://picsum.photos/seed/${event.id}/800/600`} 
+          src={(event.imageUrls && event.imageUrls.length > 0) ? event.imageUrls[0] : (event.imageUrl || `https://picsum.photos/seed/${event.id}/800/600`)} 
           alt={event.title}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
           referrerPolicy="no-referrer"

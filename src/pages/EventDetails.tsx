@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
-import { Calendar as CalendarIcon, ArrowLeft, MapPin, Clock, Users } from 'lucide-react';
+import { Calendar as CalendarIcon, ArrowLeft, MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export function EventDetails() {
   const { id } = useParams<{ id: string }>();
   const [event, setEvent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -49,6 +50,18 @@ export function EventDetails() {
     );
   }
 
+  const images = event.imageUrls && event.imageUrls.length > 0 
+    ? event.imageUrls 
+    : [event.imageUrl || `https://picsum.photos/seed/${event.id}/1200/600`];
+
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 pt-24 pb-20">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -62,16 +75,50 @@ export function EventDetails() {
           transition={{ duration: 0.5 }}
           className="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100"
         >
-          <div className="aspect-video w-full relative">
-            <img 
-              src={event.imageUrl || `https://picsum.photos/seed/${event.id}/1200/600`} 
-              alt={event.title}
-              className="w-full h-full object-cover"
-              referrerPolicy="no-referrer"
-            />
-            <div className="absolute top-6 right-6 px-4 py-2 bg-white/90 backdrop-blur-md rounded-full shadow-lg font-bold text-sm uppercase tracking-wider text-slate-800">
+          <div className="aspect-video w-full relative group bg-slate-900">
+            <AnimatePresence mode="wait">
+              <motion.img 
+                key={currentImageIndex}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                src={images[currentImageIndex]} 
+                alt={`${event.title} - Image ${currentImageIndex + 1}`}
+                className="w-full h-full object-contain"
+                referrerPolicy="no-referrer"
+              />
+            </AnimatePresence>
+            
+            <div className="absolute top-6 right-6 px-4 py-2 bg-white/90 backdrop-blur-md rounded-full shadow-lg font-bold text-sm uppercase tracking-wider text-slate-800 z-10">
               {event.status}
             </div>
+
+            {images.length > 1 && (
+              <>
+                <button 
+                  onClick={prevImage}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 hover:bg-white text-slate-800 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-md z-10"
+                >
+                  <ChevronLeft size={24} />
+                </button>
+                <button 
+                  onClick={nextImage}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 hover:bg-white text-slate-800 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-md z-10"
+                >
+                  <ChevronRight size={24} />
+                </button>
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                  {images.map((_: any, idx: number) => (
+                    <button
+                      key={idx}
+                      onClick={() => setCurrentImageIndex(idx)}
+                      className={`w-2 h-2 rounded-full transition-all ${idx === currentImageIndex ? 'bg-white w-6' : 'bg-white/50 hover:bg-white/80'}`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
           </div>
 
           <div className="p-8 md:p-12">

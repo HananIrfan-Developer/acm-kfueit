@@ -81,7 +81,8 @@ service cloud.firestore {
              isValidDateString(request.resource.data.date) &&
              request.resource.data.status in ['upcoming', 'completed'] &&
              isValidDateString(request.resource.data.createdAt) &&
-             (!('imageUrl' in request.resource.data) || request.resource.data.imageUrl is string);
+             (!('imageUrl' in request.resource.data) || request.resource.data.imageUrl is string) &&
+             (!('imageUrls' in request.resource.data) || request.resource.data.imageUrls is list);
     }
 
     function isValidMember() {
