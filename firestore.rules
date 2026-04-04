@@ -89,6 +89,8 @@ service cloud.firestore {
              isValidString('name', 1, 100) &&
              isValidString('role', 1, 100) &&
              isValidDateString(request.resource.data.createdAt) &&
+             (!('team' in request.resource.data) || request.resource.data.team is string) &&
+             (!('registrationNumber' in request.resource.data) || request.resource.data.registrationNumber is string) &&
              (!('skills' in request.resource.data) || request.resource.data.skills is list) &&
              (!('imageUrl' in request.resource.data) || request.resource.data.imageUrl is string) &&
              (!('socialLinks' in request.resource.data) || request.resource.data.socialLinks is map);

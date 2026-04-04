@@ -5,6 +5,8 @@ import { db } from '../firebase';
 import { Search, Filter, Calendar as CalendarIcon } from 'lucide-react';
 import { cn } from '../lib/utils';
 
+import { Link } from 'react-router-dom';
+
 export function Events() {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -196,11 +198,17 @@ function EventCard({ event, index, isPast = false }: { event: any, index: number
           {event.description}
         </p>
         
-        {!isPast && (
+        {!isPast ? (
           <div className="mt-auto pt-4 border-t border-slate-100">
-            <button className="w-full py-3 rounded-xl bg-blue-50 text-blue-600 font-bold hover:bg-blue-100 transition-colors flex items-center justify-center gap-2">
+            <Link to={`/events/${event.id}`} className="w-full py-3 rounded-xl bg-blue-50 text-blue-600 font-bold hover:bg-blue-100 transition-colors flex items-center justify-center gap-2">
               Learn More
-            </button>
+            </Link>
+          </div>
+        ) : (
+          <div className="mt-auto pt-4 border-t border-slate-100">
+            <Link to={`/events/${event.id}`} className="w-full py-3 rounded-xl bg-slate-50 text-slate-600 font-bold hover:bg-slate-100 transition-colors flex items-center justify-center gap-2">
+              View Details
+            </Link>
           </div>
         )}
       </div>

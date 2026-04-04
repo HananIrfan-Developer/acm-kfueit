@@ -1,20 +1,45 @@
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Code, Globe, Users, Zap, ChevronRight } from 'lucide-react';
+import { ArrowRight, Code, Globe, Users, Zap, ChevronRight, Quote, ChevronLeft } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../firebase';
+
+const testimonials = [
+  {
+    id: 1,
+    content: "Joining ACM KFUEIT was the best decision of my university life. The workshops and events helped me build a strong foundation in competitive programming and web development.",
+    author: "Ahmad Raza",
+    role: "Software Engineering Student",
+    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmad"
+  },
+  {
+    id: 2,
+    content: "The leadership opportunities provided by the chapter are unparalleled. I learned how to manage teams, organize large-scale events, and network with industry professionals.",
+    author: "Fatima Noor",
+    role: "Computer Science Graduate",
+    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Fatima"
+  },
+  {
+    id: 3,
+    content: "ACM KFUEIT is not just a society; it's a community of passionate tech enthusiasts. The collaborative environment here pushes you to learn and grow every single day.",
+    author: "Usman Ali",
+    role: "IT Undergraduate",
+    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Usman"
+  }
+];
 
 export function Home() {
   const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
+  const [currentTestimonial, setCurrentTestimonial] = useState(0);
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const q = query(collection(db, 'events'), orderBy('date', 'asc'), limit(3));
+        const q = query(collection(db, 'events'), orderBy('date', 'asc'));
         const querySnapshot = await getDocs(q);
         const eventsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as any) }));
-        const filtered = eventsData.filter((e: any) => e.status === 'upcoming');
+        const filtered = eventsData.filter((e: any) => e.status === 'upcoming').slice(0, 3);
         setUpcomingEvents(filtered);
       } catch (error) {
         console.error("Error fetching events:", error);
@@ -22,6 +47,14 @@ export function Home() {
     };
     fetchEvents();
   }, []);
+
+  const nextTestimonial = () => {
+    setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+  };
+
+  const prevTestimonial = () => {
+    setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors duration-300 overflow-hidden">
@@ -49,12 +82,12 @@ export function Home() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
                 </span>
-               ACM KFUEIT Chapter
+                KFUEIT Chapter
               </div>
               
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 leading-[1.1] text-slate-900">
-                Connecting Minds,<br className="hidden md:block" />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500">Creating the Future</span>
+                Extraordinary <br className="hidden md:block" />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500">learning & innovation</span>
               </h1>
               
               <p className="text-lg md:text-xl text-slate-600 mb-8 leading-relaxed">
@@ -78,7 +111,7 @@ export function Home() {
 
               <div className="mt-10 flex items-center gap-6 text-sm font-medium text-slate-500">
                 <div className="flex items-center gap-2">
-                  <Code size={18} className="text-blue-600" /> Collaboration
+                  <Code size={18} className="text-blue-600" /> Development
                 </div>
                 <div className="flex items-center gap-2">
                   <Users size={18} className="text-teal-500" /> Networking
@@ -95,7 +128,7 @@ export function Home() {
             >
               <div className="relative aspect-[4/3] sm:aspect-[4/3] lg:aspect-[4/5] xl:aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl border border-white/20">
                 <img 
-                  src="476164860_956447869924460_6236266839002281023_n.jpg"
+                  src="https://storage.googleapis.com/aistudio-user-content/0314%206355102%0A%0Aacm%40kfueit.edu.%20here%20is%20phone%20number%20and%20email%20and%20i%20wan%20these%20colors%20in%20this%20entire%20website%20%F0%9F%8E%A8%20White%20Theme%20Color%20System%20%28Recommended%29%0A%F0%9F%8F%A0%20Background%20%26%20Surfaces%0AMain%20Background%3A%20%23FFFFFF%20%28pure%20white%29%0ASection%20Background%20%28alternate%29%3A%20%23F8FAFC%20%28very%20light%20gray-blue%29%0ACards%20%2F%20Containers%3A%20%23FFFFFF%20with%20soft%20shadow%0A%F0%9F%8E%AF%20Primary%20Colors%0APrimary%20Blue%20%28Main%20Brand%20Color%29%3A%20%232563EB%0AHover%20Blue%3A%20%231D4ED8%0ALight%20Blue%20Tint%3A%20%23EFF6FF%0A%0A%F0%9F%91%89%20Used%20for%3A%0A%0AButtons%0ALinks%0AActive%20states%0AHighlights%0A%F0%9F%8C%BF%20Secondary%20%2F%20Accent%20Colors%0ATeal%20Accent%3A%20%2314B8A6%0AGreen%20Success%3A%20%2322C55E%0AAmber%20Warning%3A%20%23F59E0B%0ARed%20Error%3A%20%23EF4444%0A%0A%F0%9F%91%89%20Used%20for%3A%0A%0AStatus%20badges%0ANotifications%0AEvent%20tags%0A%F0%9F%93%9D%20Text%20Colors%0APrimary%20Text%3A%20%230F172A%20%28dark%20navy%29%0ASecondary%20Text%3A%20%23475569%0AMuted%20Text%3A%20%2394A3B8%0A%F0%9F%A7%B1%20Borders%20%26%20Dividers%0ABorder%20Color%3A%20%23E2E8F0%0ADivider%20Color%3A%20%23F1F5F9%0A%F0%9F%8C%9F%20Shadows%20%28for%20depth%29%0A%0AUse%20soft%20shadows%20to%20avoid%20flat%20UI%3A%0A%0ALight%20Shadow%3A%0A0%201px%203px%20rgba%280%2C0%2C0%2C0.1%29%0AMedium%20Shadow%3A%0A0%204px%2012px%20rgba%280%2C0%2C0%2C0.08%29%0A%F0%9F%8E%A8%20UI%20Style%20Guidelines%0AUse%20white%20space%20generously%20%28clean%20layout%29%0ACards%20should%20have%3A%0AWhite%20background%0ARounded%20corners%20%288%E2%80%9316px%29%0ASubtle%20shadow%0AButtons%3A%0APrimary%3A%20Blue%20background%20%28%232563EB%29%0AHover%3A%20darker%20blue%20%28%231D4ED8%29%0AUse%20accent%20colors%20sparingly%20%28for%20highlights%20only%29%0A%F0%9F%A7%A0%20Example%20UI%20Feel%0AMinimal%0AClean%0AAcademic%20%2B%20Tech%20blend%0AProfessional%20like%20university%20or%20corporate%20portals%0AEasy%20to%20read%20and%20navigate%20and%20when%20we%20login%20and%20sign%20up%20we%20face%20an%20error%20firebase%20auth%20error%20invalid%20creditail%20and%20add%20this%20mage%20in%20bg%20of%20the%20hero%20section%20of%20of%20home%20page%20and%20the%20h1%20tag%20text%20is%20not%20look%20good/image-1.jpeg"
                   alt="ACM Team"
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
@@ -184,9 +217,9 @@ export function Home() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: i * 0.1 }}
-                  className="group rounded-3xl overflow-hidden bg-white shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-500"
+                  className="group rounded-3xl overflow-hidden bg-white shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-500 flex flex-col"
                 >
-                  <div className="aspect-[4/3] overflow-hidden relative m-3 rounded-2xl">
+                  <div className="aspect-[4/3] overflow-hidden relative m-3 rounded-2xl flex-shrink-0">
                     <img 
                       src={event.imageUrl || `https://picsum.photos/seed/${event.id}/800/600`} 
                       alt={event.title}
@@ -197,12 +230,12 @@ export function Home() {
                       {new Date(event.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                     </div>
                   </div>
-                  <div className="p-6 pt-2">
+                  <div className="p-6 pt-2 flex flex-col flex-grow">
                     <h3 className="text-xl font-bold mb-2 line-clamp-1 text-slate-900">{event.title}</h3>
-                    <p className="text-slate-500 line-clamp-2 mb-4 text-sm leading-relaxed">
+                    <p className="text-slate-500 line-clamp-2 mb-6 text-sm leading-relaxed flex-grow">
                       {event.description}
                     </p>
-                    <Link to="/events" className="inline-flex items-center justify-center w-full py-3 rounded-xl bg-slate-100 text-slate-900 font-medium hover:bg-slate-900 hover:text-white transition-colors">
+                    <Link to={`/events/${event.id}`} className="inline-flex items-center justify-center w-full py-3 rounded-xl bg-slate-100 text-slate-900 font-medium hover:bg-slate-900 hover:text-white transition-colors mt-auto">
                       View Details
                     </Link>
                   </div>
@@ -246,7 +279,7 @@ export function Home() {
                 transition={{ duration: 0.6 }}
               >
                 <div className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">How it works</div>
-                <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">How Our Platform Works</h2>
+                <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">One click for you</h2>
                 <p className="text-slate-600 text-lg leading-relaxed">
                   Join our community to discover your dream career path, where innovation and collaboration meet.
                 </p>
@@ -254,11 +287,10 @@ export function Home() {
 
               <div className="space-y-8">
                 {[
-                  { title: "Organize Events", desc: "We help coordinate and manage university events efficiently, making it easier to plan, schedule, and execute activities across different departments and societies.", icon: <Globe size={24} /> },
-                  { title: "Host Webinars & Sessions", desc: "Our platform supports webinars, workshops, and online sessions where students and professionals can share knowledge, learn new skills, and engage with a wider audience.", icon: <Users size={24} /> },
-                  { title: "Collaborate with Societies", desc: "We enable collaboration between different university societies, encouraging teamwork, shared initiatives, and cross-disciplinary projects.", icon: <Code size={24} /> },
-      { title: "Grow Together", desc: "By bringing students, societies, and external partners onto one platform, we foster a community built on innovation, collaboration, and continuous learning.", icon: <Code size={24} /> },
-                  { title: "Streamlined Communication", desc: "Stay connected through centralized communication channels that keep all members updated about events, collaborations, and announcements.", icon: <Zap size={24} /> }
+                  { title: "Find your passion", desc: "Explore various fields of computing and find what excites you the most.", icon: <Globe size={24} /> },
+                  { title: "Join a team", desc: "Collaborate with like-minded individuals on exciting projects.", icon: <Users size={24} /> },
+                  { title: "Build projects", desc: "Turn your ideas into reality with hands-on development experience.", icon: <Code size={24} /> },
+                  { title: "Share knowledge", desc: "Participate in workshops and seminars to learn and grow together.", icon: <Zap size={24} /> }
                 ].map((item, i) => (
                   <motion.div 
                     key={i}
@@ -278,6 +310,79 @@ export function Home() {
                   </motion.div>
                 ))}
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-24 relative bg-slate-50 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <div className="text-sm font-bold text-blue-600 uppercase tracking-wider mb-2">Testimonials</div>
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900">What our members say</h2>
+          </motion.div>
+
+          <div className="relative max-w-4xl mx-auto">
+            <div className="absolute top-1/2 -translate-y-1/2 -left-4 md:-left-12 z-20">
+              <button 
+                onClick={prevTestimonial}
+                className="w-12 h-12 rounded-full bg-white shadow-md border border-slate-100 flex items-center justify-center text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+              >
+                <ChevronLeft size={24} />
+              </button>
+            </div>
+            
+            <div className="absolute top-1/2 -translate-y-1/2 -right-4 md:-right-12 z-20">
+              <button 
+                onClick={nextTestimonial}
+                className="w-12 h-12 rounded-full bg-white shadow-md border border-slate-100 flex items-center justify-center text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+              >
+                <ChevronRight size={24} />
+              </button>
+            </div>
+
+            <div className="overflow-hidden px-4 py-8">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentTestimonial}
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -50 }}
+                  transition={{ duration: 0.4, ease: "easeInOut" }}
+                  className="bg-white rounded-3xl p-8 md:p-12 shadow-lg border border-slate-100 text-center relative"
+                >
+                  <Quote className="absolute top-8 left-8 text-blue-100 w-16 h-16 -z-10 rotate-180" />
+                  <p className="text-xl md:text-2xl text-slate-700 leading-relaxed mb-10 italic">
+                    "{testimonials[currentTestimonial].content}"
+                  </p>
+                  <div className="flex flex-col items-center justify-center">
+                    <img 
+                      src={testimonials[currentTestimonial].image} 
+                      alt={testimonials[currentTestimonial].author} 
+                      className="w-16 h-16 rounded-full border-2 border-blue-100 mb-4"
+                    />
+                    <h4 className="text-lg font-bold text-slate-900">{testimonials[currentTestimonial].author}</h4>
+                    <p className="text-slate-500 text-sm">{testimonials[currentTestimonial].role}</p>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+            
+            <div className="flex justify-center gap-2 mt-6">
+              {testimonials.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentTestimonial(idx)}
+                  className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${idx === currentTestimonial ? 'bg-blue-600 w-8' : 'bg-slate-300 hover:bg-slate-400'}`}
+                  aria-label={`Go to testimonial ${idx + 1}`}
+                />
+              ))}
             </div>
           </div>
         </div>

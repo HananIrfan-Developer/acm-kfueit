@@ -10,6 +10,7 @@ import { Footer } from './components/Footer';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Home } from './pages/Home';
 import { Events } from './pages/Events';
+import { EventDetails } from './pages/EventDetails';
 import { Members } from './pages/Members';
 import { Contact } from './pages/Contact';
 import { Login } from './pages/Login';
@@ -43,6 +44,7 @@ export default function App() {
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/events" element={<Events />} />
+                  <Route path="/events/:id" element={<EventDetails />} />
                   <Route path="/members" element={<Members />} />
                   <Route path="/contact" element={<Contact />} />
                 </Routes>

@@ -62,7 +62,7 @@ export function AdminDashboard() {
 
   // Form states
   const [eventForm, setEventForm] = useState({ title: '', description: '', date: '', imageUrl: '', status: 'upcoming' });
-  const [memberForm, setMemberForm] = useState({ name: '', role: '', skills: '', imageUrl: '', linkedin: '', github: '', twitter: '' });
+  const [memberForm, setMemberForm] = useState({ name: '', role: '', team: 'Core', registrationNumber: '', skills: '', imageUrl: '', tiktok: '', instagram: '', youtube: '' });
   
   const [eventImageFile, setEventImageFile] = useState<File | null>(null);
   const [memberImageFile, setMemberImageFile] = useState<File | null>(null);
@@ -166,12 +166,14 @@ export function AdminDashboard() {
       const data = {
         name: memberForm.name,
         role: memberForm.role,
+        team: memberForm.team,
+        registrationNumber: memberForm.registrationNumber,
         imageUrl: finalImageUrl,
         skills: memberForm.skills.split(',').map(s => s.trim()).filter(Boolean),
         socialLinks: {
-          linkedin: memberForm.linkedin,
-          github: memberForm.github,
-          twitter: memberForm.twitter
+          tiktok: memberForm.tiktok,
+          instagram: memberForm.instagram,
+          youtube: memberForm.youtube
         },
         createdAt: new Date().toISOString()
       };
@@ -228,15 +230,17 @@ export function AdminDashboard() {
       setMemberForm({
         name: member.name,
         role: member.role,
+        team: member.team || 'Core',
+        registrationNumber: member.registrationNumber || '',
         skills: member.skills?.join(', ') || '',
         imageUrl: member.imageUrl || '',
-        linkedin: member.socialLinks?.linkedin || '',
-        github: member.socialLinks?.github || '',
-        twitter: member.socialLinks?.twitter || ''
+        tiktok: member.socialLinks?.tiktok || '',
+        instagram: member.socialLinks?.instagram || '',
+        youtube: member.socialLinks?.youtube || ''
       });
     } else {
       setEditingId(null);
-      setMemberForm({ name: '', role: '', skills: '', imageUrl: '', linkedin: '', github: '', twitter: '' });
+      setMemberForm({ name: '', role: '', team: 'Core', registrationNumber: '', skills: '', imageUrl: '', tiktok: '', instagram: '', youtube: '' });
     }
     setMemberImageFile(null);
     setIsMemberModalOpen(true);
@@ -463,8 +467,22 @@ export function AdminDashboard() {
                   <input type="text" required value={memberForm.name} onChange={e => setMemberForm({...memberForm, name: e.target.value})} className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1 text-slate-700">Role</label>
+                  <label className="block text-sm font-medium mb-1 text-slate-700">Role (Post)</label>
                   <input type="text" required value={memberForm.role} onChange={e => setMemberForm({...memberForm, role: e.target.value})} placeholder="e.g. President" className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-slate-700">Team</label>
+                  <select value={memberForm.team} onChange={e => setMemberForm({...memberForm, team: e.target.value})} className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none">
+                    <option value="Core">Core (President, VP, Chair)</option>
+                    <option value="Upper Cabinet">Upper Cabinet</option>
+                    <option value="Lower Cabinet">Lower Cabinet</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-slate-700">Registration Number</label>
+                  <input type="text" value={memberForm.registrationNumber} onChange={e => setMemberForm({...memberForm, registrationNumber: e.target.value})} placeholder="e.g. 2021-CS-123" className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none" />
                 </div>
               </div>
               <div>
@@ -495,9 +513,9 @@ export function AdminDashboard() {
               </div>
               <div className="space-y-3 pt-2">
                 <h4 className="font-medium text-sm text-slate-500">Social Links (Optional)</h4>
-                <input type="url" placeholder="LinkedIn URL" value={memberForm.linkedin} onChange={e => setMemberForm({...memberForm, linkedin: e.target.value})} className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none" />
-                <input type="url" placeholder="GitHub URL" value={memberForm.github} onChange={e => setMemberForm({...memberForm, github: e.target.value})} className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none" />
-                <input type="url" placeholder="Twitter URL" value={memberForm.twitter} onChange={e => setMemberForm({...memberForm, twitter: e.target.value})} className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none" />
+                <input type="url" placeholder="TikTok URL" value={memberForm.tiktok} onChange={e => setMemberForm({...memberForm, tiktok: e.target.value})} className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none" />
+                <input type="url" placeholder="Instagram URL" value={memberForm.instagram} onChange={e => setMemberForm({...memberForm, instagram: e.target.value})} className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none" />
+                <input type="url" placeholder="YouTube URL" value={memberForm.youtube} onChange={e => setMemberForm({...memberForm, youtube: e.target.value})} className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none" />
               </div>
               <div className="pt-4 flex justify-end gap-3 flex-shrink-0">
                 <button type="button" onClick={() => setIsMemberModalOpen(false)} className="px-4 py-2 rounded-lg font-medium text-slate-600 hover:bg-slate-100">Cancel</button>
