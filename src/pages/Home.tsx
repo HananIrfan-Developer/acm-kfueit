@@ -16,7 +16,7 @@ const testimonials = [
   {
     id: 2,
     content: "The leadership opportunities provided by the chapter are unparalleled. I learned how to manage teams, organize large-scale events, and network with industry professionals.",
-    author: "Fatima Noor",
+    author: "Hanan Irfan",
     role: "Computer Science Graduate",
     image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Fatima"
   },
@@ -89,7 +89,7 @@ export function Home() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
                 </span>
-                KFUEIT Chapter
+               ACM KFUEIT Chapter
               </div>
               
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 leading-[1.1] text-slate-900">
