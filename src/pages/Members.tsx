@@ -1,22 +1,26 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { db } from '../firebase';
+import { supabase } from '../supabase';
 import { Instagram, Youtube, Users, Video } from 'lucide-react';
 
 export function Members() {
   const [members, setMembers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const q = query(collection(db, 'members'), orderBy('createdAt', 'asc'));
-        const querySnapshot = await getDocs(q);
-        const membersData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setMembers(membersData);
-      } catch (error) {
+        const { data, error } = await supabase
+          .from('members')
+          .select('*')
+          .order('created_at', { ascending: true });
+          
+        if (error) throw error;
+        setMembers(data || []);
+      } catch (error: any) {
         console.error("Error fetching members:", error);
+        setError("Failed to load members. Please try again later.");
       } finally {
         setLoading(false);
       }
@@ -51,7 +55,7 @@ export function Members() {
               <div className="relative w-32 h-32 mx-auto mb-6">
                 <div className="absolute inset-0 bg-blue-500 rounded-full blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-500"></div>
                 <img 
-                  src={member.imageUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${member.id}`} 
+                  src={member.image_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${member.id}`} 
                   alt={member.name}
                   className="relative w-full h-full object-cover rounded-full border-4 border-white shadow-md group-hover:border-blue-100 transition-colors duration-500"
                   referrerPolicy="no-referrer"
@@ -59,10 +63,10 @@ export function Members() {
               </div>
               <h3 className="text-xl font-bold mb-1 group-hover:text-blue-600 text-slate-900 transition-colors">{member.name}</h3>
               <p className="text-blue-600 font-medium text-sm mb-2">{member.role}</p>
-              {member.registrationNumber && (
-                <p className="text-slate-500 text-xs mb-6 font-mono">{member.registrationNumber}</p>
+              {member.registration_number && (
+                <p className="text-slate-500 text-xs mb-6 font-mono">{member.registration_number}</p>
               )}
-              {!member.registrationNumber && <div className="mb-6"></div>}
+              {!member.registration_number && <div className="mb-6"></div>}
               
               {member.skills && member.skills.length > 0 && (
                 <div className="flex flex-wrap justify-center gap-2 mb-8">
@@ -75,18 +79,18 @@ export function Members() {
               )}
 
               <div className="flex justify-center gap-4 mt-auto relative z-10">
-                {member.socialLinks?.instagram && (
-                  <a href={member.socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-pink-600 hover:bg-pink-50 transition-all border border-slate-100">
+                {member.social_links?.instagram && (
+                  <a href={member.social_links.instagram} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-pink-600 hover:bg-pink-50 transition-all border border-slate-100">
                     <Instagram size={18} />
                   </a>
                 )}
-                {member.socialLinks?.youtube && (
-                  <a href={member.socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all border border-slate-100">
+                {member.social_links?.youtube && (
+                  <a href={member.social_links.youtube} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all border border-slate-100">
                     <Youtube size={18} />
                   </a>
                 )}
-                {member.socialLinks?.tiktok && (
-                  <a href={member.socialLinks.tiktok} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-black hover:bg-slate-100 transition-all border border-slate-100">
+                {member.social_links?.tiktok && (
+                  <a href={member.social_links.tiktok} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-black hover:bg-slate-100 transition-all border border-slate-100">
                     <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="18" r="4"/><path d="M12 18V2l7 4"/></svg>
                   </a>
                 )}
@@ -130,6 +134,18 @@ export function Members() {
               <div key={i} className="animate-pulse bg-white rounded-3xl h-80 border border-slate-200 shadow-sm"></div>
             ))}
           </div>
+        ) : error ? (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center py-24 bg-red-50 rounded-3xl border border-red-200 shadow-sm"
+          >
+            <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6 border border-red-200">
+              <span className="text-red-500 text-3xl font-bold">!</span>
+            </div>
+            <h3 className="text-2xl font-bold text-red-800 mb-2">Error Loading Members</h3>
+            <p className="text-red-600 text-lg">{error}</p>
+          </motion.div>
         ) : members.length > 0 ? (
           <>
             {renderMemberGroup("Core Team", coreMembers)}

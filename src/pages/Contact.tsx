@@ -1,7 +1,6 @@
 import { useState, FormEvent } from 'react';
 import { motion } from 'motion/react';
-import { collection, addDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { supabase } from '../supabase';
 import { Mail, MapPin, Send, Phone } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -22,10 +21,12 @@ export function Contact() {
 
     setIsSubmitting(true);
     try {
-      await addDoc(collection(db, 'messages'), {
+      const { error } = await supabase.from('messages').insert([{
         ...formData,
-        createdAt: new Date().toISOString()
-      });
+      }]);
+      
+      if (error) throw error;
+      
       toast.success("Message sent successfully!");
       setFormData({ name: '', email: '', message: '' });
     } catch (error) {

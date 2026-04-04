@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { db } from '../firebase';
+import { supabase } from '../supabase';
 import { Search, Filter, Calendar as CalendarIcon } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -10,18 +9,23 @@ import { Link } from 'react-router-dom';
 export function Events() {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState<'all' | 'upcoming' | 'completed'>('all');
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const q = query(collection(db, 'events'), orderBy('date', 'desc'));
-        const querySnapshot = await getDocs(q);
-        const eventsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setEvents(eventsData);
-      } catch (error) {
+        const { data, error } = await supabase
+          .from('events')
+          .select('*')
+          .order('date', { ascending: false });
+          
+        if (error) throw error;
+        setEvents(data || []);
+      } catch (error: any) {
         console.error("Error fetching events:", error);
+        setError("Failed to load events. Please try again later.");
       } finally {
         setLoading(false);
       }
@@ -102,6 +106,18 @@ export function Events() {
               <div key={i} className="animate-pulse bg-white rounded-3xl h-[400px] border border-slate-200 shadow-sm"></div>
             ))}
           </div>
+        ) : error ? (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center py-24 bg-red-50 rounded-3xl border border-red-200 shadow-sm"
+          >
+            <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6 border border-red-200">
+              <span className="text-red-500 text-3xl font-bold">!</span>
+            </div>
+            <h3 className="text-2xl font-bold text-red-800 mb-2">Error Loading Events</h3>
+            <p className="text-red-600 text-lg">{error}</p>
+          </motion.div>
         ) : (
           <>
             {(filter === 'all' || filter === 'upcoming') && upcomingEvents.length > 0 && (
@@ -169,7 +185,7 @@ function EventCard({ event, index, isPast = false }: { event: any, index: number
       <div className="aspect-[4/3] overflow-hidden relative">
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent z-10"></div>
         <img 
-          src={(event.imageUrls && event.imageUrls.length > 0) ? event.imageUrls[0] : (event.imageUrl || `https://picsum.photos/seed/${event.id}/800/600`)} 
+          src={(event.image_urls && event.image_urls.length > 0) ? event.image_urls[0] : (event.image_url || `https://picsum.photos/seed/${event.id}/800/600`)} 
           alt={event.title}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
           referrerPolicy="no-referrer"

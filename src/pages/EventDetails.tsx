@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { supabase } from '../supabase';
 import { Calendar as CalendarIcon, ArrowLeft, MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export function EventDetails() {
@@ -15,10 +14,12 @@ export function EventDetails() {
     const fetchEvent = async () => {
       if (!id) return;
       try {
-        const docRef = doc(db, 'events', id);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setEvent({ id: docSnap.id, ...docSnap.data() });
+        const { data, error } = await supabase.from('events').select('*').eq('id', id).single();
+        
+        if (error) throw error;
+        
+        if (data) {
+          setEvent(data);
         } else {
           console.log("No such document!");
         }
@@ -50,9 +51,9 @@ export function EventDetails() {
     );
   }
 
-  const images = event.imageUrls && event.imageUrls.length > 0 
-    ? event.imageUrls 
-    : [event.imageUrl || `https://picsum.photos/seed/${event.id}/1200/600`];
+  const images = event.image_urls && event.image_urls.length > 0 
+    ? event.image_urls 
+    : [event.image_url || `https://picsum.photos/seed/${event.id}/1200/600`];
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % images.length);

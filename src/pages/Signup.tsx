@@ -1,6 +1,6 @@
 import { useState, FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { auth, createUserWithEmailAndPassword } from '../firebase';
+import { supabase } from '../supabase';
 import { motion } from 'motion/react';
 import { UserPlus, Mail, Lock } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -15,7 +15,13 @@ export function Signup() {
     e.preventDefault();
     setIsSigningUp(true);
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+      
+      if (error) throw error;
+      
       toast.success("Account created successfully!");
       navigate('/');
     } catch (error: any) {

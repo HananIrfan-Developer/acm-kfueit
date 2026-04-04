@@ -1,9 +1,8 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Code, Globe, Users, Zap, ChevronRight, Quote, ChevronLeft } from 'lucide-react';
+import { ArrowRight, Code, Globe, Users, Zap, ChevronRight, Quote, ChevronLeft, CalendarIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { db } from '../firebase';
+import { supabase } from '../supabase';
 
 const testimonials = [
   {
@@ -32,17 +31,23 @@ const testimonials = [
 export function Home() {
   const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const q = query(collection(db, 'events'), orderBy('date', 'asc'));
-        const querySnapshot = await getDocs(q);
-        const eventsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as any) }));
-        const filtered = eventsData.filter((e: any) => e.status === 'upcoming').slice(0, 3);
-        setUpcomingEvents(filtered);
-      } catch (error) {
+        const { data, error } = await supabase
+          .from('events')
+          .select('*')
+          .eq('status', 'upcoming')
+          .order('date', { ascending: true })
+          .limit(3);
+          
+        if (error) throw error;
+        setUpcomingEvents(data || []);
+      } catch (error: any) {
         console.error("Error fetching events:", error);
+        setError("Failed to load events. Please try again later.");
       }
     };
     fetchEvents();
@@ -215,7 +220,14 @@ export function Home() {
             </Link>
           </motion.div>
 
-          {upcomingEvents.length > 0 ? (
+          {error ? (
+            <div className="text-center py-16 bg-red-50 rounded-3xl border border-red-100 shadow-sm">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-200">
+                <span className="text-red-500 text-2xl font-bold">!</span>
+              </div>
+              <p className="text-red-600 text-lg">{error}</p>
+            </div>
+          ) : upcomingEvents.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {upcomingEvents.map((event, i) => (
                 <motion.div
@@ -228,7 +240,7 @@ export function Home() {
                 >
                   <div className="aspect-[4/3] overflow-hidden relative m-3 rounded-2xl flex-shrink-0">
                     <img 
-                      src={(event.imageUrls && event.imageUrls.length > 0) ? event.imageUrls[0] : (event.imageUrl || `https://picsum.photos/seed/${event.id}/800/600`)} 
+                      src={(event.image_urls && event.image_urls.length > 0) ? event.image_urls[0] : (event.image_url || `https://picsum.photos/seed/${event.id}/800/600`)} 
                       alt={event.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                       referrerPolicy="no-referrer"

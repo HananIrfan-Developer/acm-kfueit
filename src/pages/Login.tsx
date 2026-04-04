@@ -1,6 +1,6 @@
 import { useState, FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { auth, signInWithEmailAndPassword } from '../firebase';
+import { supabase } from '../supabase';
 import { motion } from 'motion/react';
 import { LogIn, Mail, Lock } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -15,8 +15,14 @@ export function Login() {
     e.preventDefault();
     setIsLoggingIn(true);
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      if (userCredential.user.email === 'hananirfan81@gmail.com') {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (error) throw error;
+      
+      if (data.user?.email === 'hananirfan81@gmail.com') {
         toast.success("Welcome Admin!");
         navigate('/admin/dashboard');
       } else {

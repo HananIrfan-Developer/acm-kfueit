@@ -3,8 +3,7 @@ import { motion } from 'motion/react';
 import { Menu, X, LogIn, UserPlus, LogOut, User } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '../lib/utils';
-import { auth, logOut } from '../firebase';
-import { onAuthStateChanged } from 'firebase/auth';
+import { supabase } from '../supabase';
 import toast from 'react-hot-toast';
 
 export function Navbar() {
@@ -15,15 +14,22 @@ export function Navbar() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
     });
-    return () => unsubscribe();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const handleLogout = async () => {
     try {
-      await logOut();
+      await supabase.auth.signOut();
       toast.success("Logged out successfully");
       navigate('/');
     } catch (error) {

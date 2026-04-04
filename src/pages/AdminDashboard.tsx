@@ -1,8 +1,6 @@
 import { useState, useEffect, FormEvent, useRef } from 'react';
 import { motion } from 'motion/react';
-import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, logOut, storage } from '../firebase';
+import { supabase } from '../supabase';
 import { LogOut, Plus, Trash2, Edit, X, Check, Upload } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -71,13 +69,18 @@ export function AdminDashboard() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [eventsSnap, membersSnap] = await Promise.all([
-        getDocs(collection(db, 'events')),
-        getDocs(collection(db, 'members'))
+      const [eventsResponse, membersResponse] = await Promise.all([
+        supabase.from('events').select('*').order('date', { ascending: false }),
+        supabase.from('members').select('*').order('created_at', { ascending: true })
       ]);
-      setEvents(eventsSnap.docs.map(d => ({ id: d.id, ...d.data() })));
-      setMembers(membersSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+      
+      if (eventsResponse.error) throw eventsResponse.error;
+      if (membersResponse.error) throw membersResponse.error;
+      
+      setEvents(eventsResponse.data || []);
+      setMembers(membersResponse.data || []);
     } catch (error) {
+      console.error("Fetch error:", error);
       toast.error("Failed to fetch data");
     } finally {
       setLoading(false);
@@ -89,7 +92,7 @@ export function AdminDashboard() {
   }, []);
 
   const handleLogout = async () => {
-    await logOut();
+    await supabase.auth.signOut();
   };
 
   // Event Handlers
@@ -115,17 +118,21 @@ export function AdminDashboard() {
       const firstImageUrl = finalImageUrls.length > 0 ? finalImageUrls[0] : eventForm.imageUrl;
 
       const data = {
-        ...eventForm,
-        imageUrl: firstImageUrl,
-        imageUrls: finalImageUrls,
+        title: eventForm.title,
+        description: eventForm.description,
         date: new Date(eventForm.date).toISOString(),
-        createdAt: new Date().toISOString()
+        image_url: firstImageUrl,
+        image_urls: finalImageUrls,
+        status: eventForm.status,
       };
+      
       if (editingId) {
-        await updateDoc(doc(db, 'events', editingId), data);
+        const { error } = await supabase.from('events').update(data).eq('id', editingId);
+        if (error) throw error;
         toast.success("Event updated");
       } else {
-        await addDoc(collection(db, 'events'), data);
+        const { error } = await supabase.from('events').insert([data]);
+        if (error) throw error;
         toast.success("Event added");
       }
       setIsEventModalOpen(false);
@@ -141,7 +148,8 @@ export function AdminDashboard() {
   const handleDeleteEvent = async (id: string) => {
     if (confirm("Are you sure you want to delete this event?")) {
       try {
-        await deleteDoc(doc(db, 'events', id));
+        const { error } = await supabase.from('events').delete().eq('id', id);
+        if (error) throw error;
         toast.success("Event deleted");
         fetchData();
       } catch (error) {
@@ -172,21 +180,23 @@ export function AdminDashboard() {
         name: memberForm.name,
         role: memberForm.role,
         team: memberForm.team,
-        registrationNumber: memberForm.registrationNumber,
-        imageUrl: finalImageUrl,
+        registration_number: memberForm.registrationNumber,
+        image_url: finalImageUrl,
         skills: memberForm.skills.split(',').map(s => s.trim()).filter(Boolean),
-        socialLinks: {
+        social_links: {
           tiktok: memberForm.tiktok,
           instagram: memberForm.instagram,
           youtube: memberForm.youtube
-        },
-        createdAt: new Date().toISOString()
+        }
       };
+      
       if (editingId) {
-        await updateDoc(doc(db, 'members', editingId), data);
+        const { error } = await supabase.from('members').update(data).eq('id', editingId);
+        if (error) throw error;
         toast.success("Member updated");
       } else {
-        await addDoc(collection(db, 'members'), data);
+        const { error } = await supabase.from('members').insert([data]);
+        if (error) throw error;
         toast.success("Member added");
       }
       setIsMemberModalOpen(false);
@@ -202,7 +212,8 @@ export function AdminDashboard() {
   const handleDeleteMember = async (id: string) => {
     if (confirm("Are you sure you want to delete this member?")) {
       try {
-        await deleteDoc(doc(db, 'members', id));
+        const { error } = await supabase.from('members').delete().eq('id', id);
+        if (error) throw error;
         toast.success("Member deleted");
         fetchData();
       } catch (error) {
@@ -216,16 +227,16 @@ export function AdminDashboard() {
       setEditingId(event.id);
       
       // Handle backward compatibility where only imageUrl exists
-      let existingImageUrls = event.imageUrls || [];
-      if (existingImageUrls.length === 0 && event.imageUrl) {
-        existingImageUrls = [event.imageUrl];
+      let existingImageUrls = event.image_urls || [];
+      if (existingImageUrls.length === 0 && event.image_url) {
+        existingImageUrls = [event.image_url];
       }
 
       setEventForm({
         title: event.title,
         description: event.description,
         date: event.date.split('T')[0],
-        imageUrl: event.imageUrl || '',
+        imageUrl: event.image_url || '',
         imageUrls: existingImageUrls,
         status: event.status
       });
@@ -244,12 +255,12 @@ export function AdminDashboard() {
         name: member.name,
         role: member.role,
         team: member.team || 'Core',
-        registrationNumber: member.registrationNumber || '',
+        registrationNumber: member.registration_number || '',
         skills: member.skills?.join(', ') || '',
-        imageUrl: member.imageUrl || '',
-        tiktok: member.socialLinks?.tiktok || '',
-        instagram: member.socialLinks?.instagram || '',
-        youtube: member.socialLinks?.youtube || ''
+        imageUrl: member.image_url || '',
+        tiktok: member.social_links?.tiktok || '',
+        instagram: member.social_links?.instagram || '',
+        youtube: member.social_links?.youtube || ''
       });
     } else {
       setEditingId(null);
@@ -377,7 +388,7 @@ export function AdminDashboard() {
                       {members.map(member => (
                         <tr key={member.id} className="border-b border-slate-200 last:border-0 hover:bg-slate-50">
                           <td className="p-4 font-medium flex items-center gap-3 text-slate-900">
-                            <img src={member.imageUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${member.id}`} alt="" className="w-8 h-8 rounded-full bg-slate-200 border border-slate-200" />
+                            <img src={member.image_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${member.id}`} alt="" className="w-8 h-8 rounded-full bg-slate-200 border border-slate-200" />
                             {member.name}
                           </td>
                           <td className="p-4 text-slate-600">{member.role}</td>

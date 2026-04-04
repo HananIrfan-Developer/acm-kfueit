@@ -1,16 +1,14 @@
 import { Navigate } from 'react-router-dom';
 import { useEffect, useState, ReactNode } from 'react';
-import { auth } from '../firebase';
-import { onAuthStateChanged } from 'firebase/auth';
+import { supabase } from '../supabase';
 
 export function ProtectedRoute({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      // Only allow the specific admin email
-      if (user && user.email === 'hananirfan81@gmail.com') {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user?.email === 'hananirfan81@gmail.com') {
         setIsAuthenticated(true);
       } else {
         setIsAuthenticated(false);
@@ -18,7 +16,18 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user?.email === 'hananirfan81@gmail.com') {
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
+      }
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   if (loading) {
