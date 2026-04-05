@@ -80,7 +80,7 @@ export function Navbar() {
             <div className="flex items-center gap-4 pl-4 border-l border-slate-200">
               {user ? (
                 <div className="flex items-center gap-4">
-                  {user.email === 'hananirfan81@gmail.com' && (
+                  {user.email === 'acmkfueitt@gmail.com' && (
                     <Link to="/admin/dashboard" className="text-sm font-medium text-blue-600 hover:underline">
                       Dashboard
                     </Link>
@@ -147,7 +147,7 @@ export function Navbar() {
                   <div className="px-4 py-2 text-sm text-slate-500 flex items-center gap-2">
                     <User size={16} /> {user.email}
                   </div>
-                  {user.email === 'hananirfan81@gmail.com' && (
+                  {user.email === 'acmkfueitt@gmail.com' && (
                     <Link to="/admin/dashboard" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-center rounded-xl bg-blue-600 text-white font-medium">
                       Dashboard
                     </Link>
