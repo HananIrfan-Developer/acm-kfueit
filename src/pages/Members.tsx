@@ -28,10 +28,55 @@ export function Members() {
     fetchMembers();
   }, []);
 
-  const coreMembers = members.filter(m => m.team === 'Core' || (!m.team && (m.role.toLowerCase().includes('president') || m.role.toLowerCase().includes('chair'))));
-  const upperCabinet = members.filter(m => m.team === 'Upper Cabinet');
-  const lowerCabinet = members.filter(m => m.team === 'Lower Cabinet');
-  const otherMembers = members.filter(m => m.team !== 'Core' && m.team !== 'Upper Cabinet' && m.team !== 'Lower Cabinet' && !m.role.toLowerCase().includes('president') && !m.role.toLowerCase().includes('chair'));
+  const roleOrder = [
+    "president",
+    "vice president",
+    "chair",
+    "general secretary",
+    "assistant general secretary",
+    "event management head",
+    "graphics head",
+    "media head",
+    "protocol director",
+    "hosting"
+  ];
+
+  const getRoleRank = (role: string) => {
+    const lowerRole = role.toLowerCase();
+    for (let i = 0; i < roleOrder.length; i++) {
+      if (lowerRole.includes(roleOrder[i])) {
+        return i;
+      }
+    }
+    return 999;
+  };
+
+  const sortMembers = (membersList: any[]) => {
+    return [...membersList].sort((a, b) => {
+      // 1. Sort by explicit sort_order if it exists and is not 999
+      const orderA = a.sort_order ?? 999;
+      const orderB = b.sort_order ?? 999;
+      
+      if (orderA !== orderB) {
+        return orderA - orderB;
+      }
+      
+      // 2. Fallback to role rank
+      const rankA = getRoleRank(a.role);
+      const rankB = getRoleRank(b.role);
+      if (rankA !== rankB) {
+        return rankA - rankB;
+      }
+      
+      // 3. Fallback to name
+      return a.name.localeCompare(b.name);
+    });
+  };
+
+  const coreMembers = sortMembers(members.filter(m => m.team === 'Core' || (!m.team && (m.role.toLowerCase().includes('president') || m.role.toLowerCase().includes('chair')))));
+  const upperCabinet = sortMembers(members.filter(m => m.team === 'Upper Cabinet'));
+  const lowerCabinet = sortMembers(members.filter(m => m.team === 'Lower Cabinet'));
+  const otherMembers = sortMembers(members.filter(m => m.team !== 'Core' && m.team !== 'Upper Cabinet' && m.team !== 'Lower Cabinet' && !m.role.toLowerCase().includes('president') && !m.role.toLowerCase().includes('chair')));
 
   const renderMemberGroup = (title: string, groupMembers: any[]) => {
     if (groupMembers.length === 0) return null;
