@@ -22,7 +22,7 @@ export function Login() {
       
       if (error) throw error;
       
-      if (data.user?.email === 'acmkfueitt@gmail.com') {
+      if (data.user?.email === 'hananirfan81@gmail.com') {
         toast.success("Welcome Admin!");
         navigate('/admin/dashboard');
       } else {
