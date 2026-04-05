@@ -7,7 +7,7 @@ import { supabase } from '../supabase';
 const testimonials = [
   {
     id: 1,
-    content: "As President, my vision is simple — to empower students, foster innovation, and build a strong, supportive community.",
+    content: "As President, my vision is simple to empower students, foster innovation, and build a strong, supportive community.",
     author: "Hamza Arshad",
     role: "Computer Engineering Student",
     image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmad"
@@ -16,7 +16,7 @@ const testimonials = [
     id: 2,
     content: "The leadership opportunities provided by the chapter are unparalleled. I learned how to manage teams, organize large-scale events, and network with industry professionals.",
     author: "Hanan Irfan",
-    role: "Computer Science Graduate",
+    role: "Computer Science Student",
     image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Fatima"
   },
   {
