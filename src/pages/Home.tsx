@@ -7,22 +7,22 @@ import { supabase } from '../supabase';
 const testimonials = [
   {
     id: 1,
-    content: "Joining ACM KFUEIT was the best decision of my university life. The workshops and events helped me build a strong foundation in competitive programming and web development.",
-    author: "Ahmad Raza",
-    role: "Software Engineering Student",
+    content: "As President, my vision is simple to empower students, foster innovation, and build a strong, supportive community.",
+    author: "Hamza Arshad",
+    role: "Computer Engineering Student",
     image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmad"
   },
   {
     id: 2,
     content: "The leadership opportunities provided by the chapter are unparalleled. I learned how to manage teams, organize large-scale events, and network with industry professionals.",
-    author: "Fatima Noor",
-    role: "Computer Science Graduate",
+    author: "Hanan Irfan",
+    role: "Computer Science Student",
     image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Fatima"
   },
   {
     id: 3,
     content: "ACM KFUEIT is not just a society; it's a community of passionate tech enthusiasts. The collaborative environment here pushes you to learn and grow every single day.",
-    author: "Usman Ali",
+    author: "Fatima Noor",
     role: "IT Undergraduate",
     image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Usman"
   }
