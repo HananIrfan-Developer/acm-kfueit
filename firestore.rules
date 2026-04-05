@@ -47,7 +47,7 @@ service cloud.firestore {
 
     function isAdmin() {
       // Allow the specific user email to act as admin
-      return isAuthenticated() && request.auth.token.email == "hananirfan81@gmail.com";
+      return isAuthenticated() && request.auth.token.email == "acmkfueitt@gmail.com";
     }
 
     function hasRequiredFields(fields) {
