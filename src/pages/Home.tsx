@@ -7,9 +7,9 @@ import { supabase } from '../supabase';
 const testimonials = [
   {
     id: 1,
-    content: "Joining ACM KFUEIT was the best decision of my university life. The workshops and events helped me build a strong foundation in competitive programming and web development.",
-    author: "Ahmad Raza",
-    role: "Software Engineering Student",
+    content: "As President, my vision is simple — to empower students, foster innovation, and build a strong, supportive community.",
+    author: "Hamza Arshad",
+    role: "Computer Engineering Student",
     image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmad"
   },
   {
