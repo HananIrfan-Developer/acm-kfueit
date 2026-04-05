@@ -60,7 +60,7 @@ export function AdminDashboard() {
 
   // Form states
   const [eventForm, setEventForm] = useState({ title: '', description: '', date: '', imageUrl: '', imageUrls: [] as string[], status: 'upcoming' });
-  const [memberForm, setMemberForm] = useState({ name: '', role: '', team: 'Core', registrationNumber: '', skills: '', imageUrl: '', tiktok: '', instagram: '', youtube: '' });
+  const [memberForm, setMemberForm] = useState({ name: '', role: '', team: 'Core', registrationNumber: '', skills: '', imageUrl: '', tiktok: '', instagram: '', youtube: '', sortOrder: 999 });
   
   const [eventImageFiles, setEventImageFiles] = useState<File[]>([]);
   const [memberImageFile, setMemberImageFile] = useState<File | null>(null);
@@ -137,9 +137,9 @@ export function AdminDashboard() {
       }
       setIsEventModalOpen(false);
       fetchData();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Event save error:", error);
-      toast.error("Failed to save event");
+      toast.error(error.message || "Failed to save event");
     } finally {
       setIsUploading(false);
     }
@@ -181,6 +181,7 @@ export function AdminDashboard() {
         role: memberForm.role,
         team: memberForm.team,
         registration_number: memberForm.registrationNumber,
+        sort_order: Number(memberForm.sortOrder),
         image_url: finalImageUrl,
         skills: memberForm.skills.split(',').map(s => s.trim()).filter(Boolean),
         social_links: {
@@ -201,9 +202,9 @@ export function AdminDashboard() {
       }
       setIsMemberModalOpen(false);
       fetchData();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Member save error:", error);
-      toast.error("Failed to save member");
+      toast.error(error.message || "Failed to save member");
     } finally {
       setIsUploading(false);
     }
@@ -260,11 +261,12 @@ export function AdminDashboard() {
         imageUrl: member.image_url || '',
         tiktok: member.social_links?.tiktok || '',
         instagram: member.social_links?.instagram || '',
-        youtube: member.social_links?.youtube || ''
+        youtube: member.social_links?.youtube || '',
+        sortOrder: member.sort_order ?? 999
       });
     } else {
       setEditingId(null);
-      setMemberForm({ name: '', role: '', team: 'Core', registrationNumber: '', skills: '', imageUrl: '', tiktok: '', instagram: '', youtube: '' });
+      setMemberForm({ name: '', role: '', team: 'Core', registrationNumber: '', skills: '', imageUrl: '', tiktok: '', instagram: '', youtube: '', sortOrder: 999 });
     }
     setMemberImageFile(null);
     setIsMemberModalOpen(true);
@@ -525,9 +527,13 @@ export function AdminDashboard() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1 text-slate-700">Registration Number</label>
-                  <input type="text" value={memberForm.registrationNumber} onChange={e => setMemberForm({...memberForm, registrationNumber: e.target.value})} placeholder="e.g. 2021-CS-123" className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none" />
+                  <label className="block text-sm font-medium mb-1 text-slate-700">Display Rank (1 is highest)</label>
+                  <input type="number" value={memberForm.sortOrder} onChange={e => setMemberForm({...memberForm, sortOrder: parseInt(e.target.value) || 999})} placeholder="e.g. 1" className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none" />
                 </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1 text-slate-700">Registration Number</label>
+                <input type="text" value={memberForm.registrationNumber} onChange={e => setMemberForm({...memberForm, registrationNumber: e.target.value})} placeholder="e.g. 2021-CS-123" className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none" />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-slate-700">Skills (comma separated)</label>
