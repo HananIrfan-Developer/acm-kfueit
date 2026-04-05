@@ -8,7 +8,7 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user?.email === 'hananirfan81@gmail.com') {
+      if (session?.user?.email === 'acmkfueitt@gmail.com') {
         setIsAuthenticated(true);
       } else {
         setIsAuthenticated(false);
@@ -19,7 +19,7 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user?.email === 'hananirfan81@gmail.com') {
+      if (session?.user?.email === 'acmkfueitt@gmail.com') {
         setIsAuthenticated(true);
       } else {
         setIsAuthenticated(false);
