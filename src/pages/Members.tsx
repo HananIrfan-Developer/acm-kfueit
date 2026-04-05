@@ -42,7 +42,17 @@ export function Members() {
   ];
 
   const getRoleRank = (role: string) => {
-    const lowerRole = role.toLowerCase();
+    const lowerRole = role.toLowerCase().trim();
+    
+    // 1. Check for exact match first
+    const exactIndex = roleOrder.indexOf(lowerRole);
+    if (exactIndex !== -1) return exactIndex;
+    
+    // 2. Handle the "vice president" vs "president" substring issue
+    if (lowerRole.includes("vice president")) return 1;
+    if (lowerRole.includes("president")) return 0;
+    
+    // 3. Fallback to substring match for other roles
     for (let i = 0; i < roleOrder.length; i++) {
       if (lowerRole.includes(roleOrder[i])) {
         return i;
