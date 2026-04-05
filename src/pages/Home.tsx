@@ -15,7 +15,7 @@ const testimonials = [
   {
     id: 2,
     content: "The leadership opportunities provided by the chapter are unparalleled. I learned how to manage teams, organize large-scale events, and network with industry professionals.",
-    author: "Fatima Noor",
+    author: "Hanan Irfan",
     role: "Computer Science Graduate",
     image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Fatima"
   },
