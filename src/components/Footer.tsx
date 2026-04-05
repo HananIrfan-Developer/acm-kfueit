@@ -37,7 +37,7 @@ export function Footer() {
             <ul className="space-y-4">
               <li className="flex items-center gap-3 text-slate-600">
                 <Mail size={18} className="text-blue-600" />
-                <a href="mailto:acm@kfueit.edu.pk" className="hover:text-blue-600 transition-colors">acm@kfueit.edu.pk</a>
+                <a href="mailto:acmkfueitt@gmail.com" className="hover:text-blue-600 transition-colors">acmkfueitt@gmail.com</a>
               </li>
               <li className="flex items-start gap-3 text-slate-600">
                 <MapPin size={18} className="mt-1 flex-shrink-0 text-blue-600" />
