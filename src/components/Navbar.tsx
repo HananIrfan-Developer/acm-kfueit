@@ -50,7 +50,7 @@ export function Navbar() {
         <div className="flex justify-between h-20 items-center">
           <div className="flex-shrink-0 flex items-center gap-2">
             <Link to="/" className="flex items-center gap-3">
-              <img src="https://vui.unsplash.com/resize?height=256&quality=60&type=auto&url=https%3A%2F%2Fsearched-images.s3.us-west-2.amazonaws.com%2F3ec28cc8-6486-4a1f-9f4f-7d3d09d4d592%3FX-Amz-Algorithm%3DAWS4-HMAC-SHA256%26X-Amz-Credential%3DAKIAQ4GRIA4QTG2PSHUB%252F20260404%252Fus-west-2%252Fs3%252Faws4_request%26X-Amz-Date%3D20260404T091013Z%26X-Amz-Expires%3D86400%26X-Amz-SignedHeaders%3Dhost%26X-Amz-Signature%3Da6e14384e355f8346be50ba8a97b3baa120eb28b3cc87fe6aef2863905ef2165&sign=WjU_fZ2nNFX1oUXEY8Pqd3FMDOLpvJ2at0PmgvT1Ps8" alt="ACM KFUEIT Logo" className="h-12 w-auto object-contain rounded-full" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPHaOyU7EMjnlbQp59hxvBpuJ7fQ2DDu6zCQ&s" alt="ACM KFUEIT Logo" className="h-12 w-auto object-contain rounded-full" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
               <span className="font-bold text-xl text-slate-900 tracking-tight hidden sm:block">
                 ACM <span className="text-blue-600">KFUEIT</span>
               </span>
