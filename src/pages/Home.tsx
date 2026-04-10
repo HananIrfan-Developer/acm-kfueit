@@ -8,21 +8,21 @@ const testimonials = [
   {
     id: 1,
     content: "Joining ACM KFUEIT was the best decision of my university life. The workshops and events helped me build a strong foundation in competitive programming and web development.",
-    author: "Ahmad Raza",
-    role: "Software Engineering Student",
+    author: "Hamza Arshad",
+    role: "Compuuter Engineering Student",
     image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmad"
   },
   {
     id: 2,
     content: "The leadership opportunities provided by the chapter are unparalleled. I learned how to manage teams, organize large-scale events, and network with industry professionals.",
-    author: "Fatima Noor",
-    role: "Computer Science Graduate",
+    author: "Hanan Irfan",
+    role: "Computer Science Student",
     image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Fatima"
   },
   {
     id: 3,
     content: "ACM KFUEIT is not just a society; it's a community of passionate tech enthusiasts. The collaborative environment here pushes you to learn and grow every single day.",
-    author: "Usman Ali",
+    author: "Noor Fatima",
     role: "IT Undergraduate",
     image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Usman"
   }
@@ -140,7 +140,7 @@ export function Home() {
             >
               <div className="relative aspect-[4/3] sm:aspect-[4/3] lg:aspect-[4/5] xl:aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl border border-white/20">
                 <img 
-                  src="https://scontent.fryk5-1.fna.fbcdn.net/v/t39.30808-6/662811876_122216123378515234_5314113284772806381_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=13d280&_nc_eui2=AeFhaMZMXpuzOkixw8k0cCLZKSUXAwKGgtEpJRcDAoaC0QhDI72DbxX54Zz1u_i0u0HOO4j70i0xscLod8S2MdZK&_nc_ohc=e5G_0nqsFwoQ7kNvwEBn_WJ&_nc_oc=AdoGvzPLs8q2pcFgUISfJlUTs2HDb2FXD2d6qgZaehxR8YlDkbP-BFLuUhg7_IpLmVo&_nc_zt=23&_nc_ht=scontent.fryk5-1.fna&_nc_gid=q52CkSpgKRKPlRJBgnG-jA&_nc_ss=7a3a8&oh=00_Af2y17buMxH6TDmG8C8uAwA2wjNLlYWaTaQd1-ARG0nQSw&oe=69D6E6D0"
+                  src="https://scontent.fryk5-1.fna.fbcdn.net/v/t39.30808-6/261236715_226811562858127_6158079257616583969_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=1d70fc&_nc_ohc=6s-hYq2JsPwQ7kNvwFodvQy&_nc_oc=Adris3ZKKiqTUPBSQK4exjFa-rI146ejv29Z66K6p4LDmp1PDJRzLIqGhJzTRPQrEoQ&_nc_zt=23&_nc_ht=scontent.fryk5-1.fna&_nc_gid=RMDUvsleNWwec242bg7Xog&_nc_ss=7a389&oh=00_Af2BjoaSKiqR-Wzij0Knl2an6DCTGce8u5G0CNUXtMGHtA&oe=69DECC04"
                   alt="ACM Team"
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
