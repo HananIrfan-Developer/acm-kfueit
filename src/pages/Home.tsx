@@ -202,7 +202,7 @@ export function Home() {
             >
               <div className="relative aspect-[4/3] sm:aspect-[4/3] lg:aspect-[4/5] xl:aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl border border-white/20">
                 <img 
-                  src="https://scontent.fryk5-1.fna.fbcdn.net/v/t39.30808-6/662811876_122216123378515234_5314113284772806381_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=13d280&_nc_eui2=AeFhaMZMXpuzOkixw8k0cCLZKSUXAwKGgtEpJRcDAoaC0QhDI72DbxX54Zz1u_i0u0HOO4j70i0xscLod8S2MdZK&_nc_ohc=e5G_0nqsFwoQ7kNvwEBn_WJ&_nc_oc=AdoGvzPLs8q2pcFgUISfJlUTs2HDb2FXD2d6qgZaehxR8YlDkbP-BFLuUhg7_IpLmVo&_nc_zt=23&_nc_ht=scontent.fryk5-1.fna&_nc_gid=q52CkSpgKRKPlRJBgnG-jA&_nc_ss=7a3a8&oh=00_Af2y17buMxH6TDmG8C8uAwA2wjNLlYWaTaQd1-ARG0nQSw&oe=69D6E6D0"
+                  src="https://scontent.fryk5-1.fna.fbcdn.net/v/t39.30808-6/662811876_122216123378515234_5314113284772806381_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=13d280&_nc_eui2=AeFhaMZMXpuzOkixw8k0cCLZKSUXAwKGgtEpJRcDAoaC0QhDI72DbxX54Zz1u_i0u0HOO4j70i0xscLod8S2MdZK&_nc_ohc=MARjMgUN-8UQ7kNvwEK-sN5&_nc_oc=Adp5bfseJgbBQ2D_PNr02mW3kPsZ9XAJnC-b039CEmePcFCinNAdLIGVc2lslCG6abc&_nc_zt=23&_nc_ht=scontent.fryk5-1.fna&_nc_gid=-5KsQf7YMCx2wBXCaM5e0Q&_nc_ss=7a3a8&oh=00_Af1-9S0kudtzalkiN5BJ9R1Fuzhq4Mahv3u9upljQx1Qvg&oe=69E59F90"
                   alt="ACM Team"
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
