@@ -35,10 +35,16 @@ export function Members() {
     "general secretary",
     "assistant general secretary",
     "event management head",
-    "graphics head",
+    "hosting team head",
+    "hospitality team head",
+    "director protocol team",
+    "protocol manager",
     "media head",
-    "protocol director",
-    "hosting"
+    "media team head",
+    "graphics head",
+    "graphics team head",
+    "stage and decor manager",
+    "stage and decor managers"
   ];
 
   const getRoleRank = (role: string) => {

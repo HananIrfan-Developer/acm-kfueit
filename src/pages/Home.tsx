@@ -1,30 +1,30 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Code, Globe, Users, Zap, ChevronRight, Quote, ChevronLeft, CalendarIcon } from 'lucide-react';
+import { ArrowRight, Code, Globe, Users, Zap, ChevronRight, Quote, ChevronLeft, CalendarIcon, X, PlayCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { supabase } from '../supabase';
 
 const testimonials = [
   {
     id: 1,
-    content: "As President, I’m proud to lead a passionate team dedicated to innovation, growth, and empowering every member to achieve excellence.",
+    content: "Joining ACM KFUEIT was the best decision of my university life. The workshops and events helped me build a strong foundation in competitive programming and web development.",
     author: "Hamza Arshad",
-    role: "Compuuter Engineering Student",
-    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmad"
+    role: "Computer engineering student, President of this society",
+    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Hamza"
   },
   {
     id: 2,
     content: "The leadership opportunities provided by the chapter are unparalleled. I learned how to manage teams, organize large-scale events, and network with industry professionals.",
     author: "Hanan Irfan",
     role: "Computer Science Student",
-    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Fatima"
+    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Hanan"
   },
   {
     id: 3,
     content: "ACM KFUEIT is not just a society; it's a community of passionate tech enthusiasts. The collaborative environment here pushes you to learn and grow every single day.",
-    author: "Noor Fatima",
-    role: "IT Undergraduate",
-    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Usman"
+    author: "Fatima Noor",
+    role: "IT Student",
+    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Fatima"
   }
 ];
 
@@ -32,6 +32,7 @@ export function Home() {
   const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -71,6 +72,59 @@ export function Home() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors duration-300 overflow-hidden">
       
+      {/* Welcome Modal */}
+      <AnimatePresence>
+        {showWelcomeModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowWelcomeModal(false)}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden z-10"
+            >
+              <button
+                onClick={() => setShowWelcomeModal(false)}
+                className="absolute top-4 right-4 w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-600 transition-colors z-20"
+              >
+                <X size={20} />
+              </button>
+              
+              <div className="p-8 sm:p-12 text-center">
+                <div className="w-24 h-24 mx-auto mb-6 rounded-full overflow-hidden border-4 border-blue-100 shadow-lg">
+                  <img src="https://scontent.fryk5-1.fna.fbcdn.net/v/t39.30808-6/672598077_122217466724515234_1960607746809313137_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=13d280&_nc_eui2=AeFGjH2vX3iKftZSjUDHFf_erEiJREwcbi2sSIlETBxuLTcT7NRPSJ3OZ6HJcyZ_wZoEbp0_pMM6wP6Ba52-8mro&_nc_ohc=0v9NqgkagIkQ7kNvwHTMQmH&_nc_oc=AdrmCePOzyJOZvvj7TTv5LAZh_V-QECyzoT5uk7sUYIBz224_hi_-GUWPevIXI8AJ7I&_nc_zt=23&_nc_ht=scontent.fryk5-1.fna&_nc_gid=ywyUGyo97Gi6tSO59vJtjg&_nc_ss=7a3a8&oh=00_Af33066zkPm_xshtv02cKyFdi9oBWXJSUEzzi_VflR8c_A&oe=69E58649" />
+                </div>
+                <h3 className="text-3xl font-extrabold text-slate-900 mb-2">Welcome to ACM KFUEIT!</h3>
+                <p className="text-blue-600 font-bold mb-6 uppercase tracking-wider text-sm">Message from the President</p>
+                <div className="text-lg text-slate-600 leading-relaxed mb-8 space-y-4">
+                  <p>
+                    Hello everyone! I am <strong>Hamza Arshad</strong>, President of the ACM KFUEIT Student Chapter.
+                  </p>
+                  <p>
+                    Today marks a special milestone as we officially launch our new platform. Our goal has always been to create a community where students can <strong>Learn, Build, Innovate, and Connect</strong>. 
+                  </p>
+                  <p>
+                    Whether you are a beginner taking your first steps in tech, or an experienced developer looking to collaborate, there is a place for you here. Let's shape the future of technology together!
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowWelcomeModal(false)}
+                  className="px-8 py-4 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20"
+                >
+                  Let's Get Started!
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
         <div className="absolute inset-0 bg-slate-50 z-0">
@@ -106,7 +160,7 @@ export function Home() {
                 ACM is an International society's chapter working in KFUEIT for the development of Candidates. Exploring technology is an unforgettable adventure.
               </p>
               
-              <div className="flex flex-col sm:flex-row items-center gap-4">
+              <div className="flex flex-wrap items-center gap-4">
                 <Link
                   to="/signup"
                   className="w-full sm:w-auto px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2"
@@ -119,6 +173,14 @@ export function Home() {
                 >
                   View Events
                 </Link>
+                <button
+                  onClick={() => setShowWelcomeModal(true)}
+                  className="w-full sm:w-auto px-8 py-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold transition-all shadow-[0_0_15px_rgba(15,23,42,0.3)] hover:shadow-[0_0_25px_rgba(15,23,42,0.5)] flex items-center justify-center gap-2 relative overflow-hidden group"
+                >
+                  <span className="absolute inset-0 w-full h-full bg-white/10 group-hover:animate-pulse rounded-xl"></span>
+                  <PlayCircle size={18} className="relative z-10 text-teal-400" /> 
+                  <span className="relative z-10">Launch Day Welcome</span>
+                </button>
               </div>
 
               <div className="mt-10 flex items-center gap-6 text-sm font-medium text-slate-500">
@@ -140,7 +202,7 @@ export function Home() {
             >
               <div className="relative aspect-[4/3] sm:aspect-[4/3] lg:aspect-[4/5] xl:aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl border border-white/20">
                 <img 
-                  src="https://scontent.fryk5-1.fna.fbcdn.net/v/t39.30808-6/662811876_122216123378515234_5314113284772806381_n.jpg?stp=dst-jpg_p180x540_tt6&_nc_cat=104&ccb=1-7&_nc_sid=13d280&_nc_eui2=AeFhaMZMXpuzOkixw8k0cCLZKSUXAwKGgtEpJRcDAoaC0QhDI72DbxX54Zz1u_i0u0HOO4j70i0xscLod8S2MdZK&_nc_ohc=MARjMgUN-8UQ7kNvwEK-sN5&_nc_oc=Adp5bfseJgbBQ2D_PNr02mW3kPsZ9XAJnC-b039CEmePcFCinNAdLIGVc2lslCG6abc&_nc_zt=23&_nc_ht=scontent.fryk5-1.fna&_nc_gid=-uCUYyjS1x9M89phVYP_BA&_nc_ss=7a3a8&oh=00_Af1R_hoSXx-aGrfSbmCxNAKGztcPr6SnFMu-TinkJLgUuw&oe=69E56750"
+                  src="https://scontent.fryk5-1.fna.fbcdn.net/v/t39.30808-6/662811876_122216123378515234_5314113284772806381_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=13d280&_nc_eui2=AeFhaMZMXpuzOkixw8k0cCLZKSUXAwKGgtEpJRcDAoaC0QhDI72DbxX54Zz1u_i0u0HOO4j70i0xscLod8S2MdZK&_nc_ohc=e5G_0nqsFwoQ7kNvwEBn_WJ&_nc_oc=AdoGvzPLs8q2pcFgUISfJlUTs2HDb2FXD2d6qgZaehxR8YlDkbP-BFLuUhg7_IpLmVo&_nc_zt=23&_nc_ht=scontent.fryk5-1.fna&_nc_gid=q52CkSpgKRKPlRJBgnG-jA&_nc_ss=7a3a8&oh=00_Af2y17buMxH6TDmG8C8uAwA2wjNLlYWaTaQd1-ARG0nQSw&oe=69D6E6D0"
                   alt="ACM Team"
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"

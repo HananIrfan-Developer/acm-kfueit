@@ -160,9 +160,9 @@ export function EventDetails() {
             
             {event.status === 'upcoming' && (
               <div className="mt-12 pt-8 border-t border-slate-100 flex justify-center">
-                <button className="px-8 py-4 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20">
+                <Link to="/contact" className="px-8 py-4 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20">
                   Register for Event
-                </button>
+                </Link>
               </div>
             )}
           </div>
