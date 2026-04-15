@@ -7,7 +7,7 @@ import { supabase } from '../supabase';
 const testimonials = [
   {
     id: 1,
-    content: "Joining ACM KFUEIT was the best decision of my university life. The workshops and events helped me build a strong foundation in competitive programming and web development.",
+    content: "As President, I’m proud to lead a passionate team dedicated to innovation, growth, and empowering every member to achieve excellence.",
     author: "Hamza Arshad",
     role: "Compuuter Engineering Student",
     image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmad"
@@ -140,7 +140,7 @@ export function Home() {
             >
               <div className="relative aspect-[4/3] sm:aspect-[4/3] lg:aspect-[4/5] xl:aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl border border-white/20">
                 <img 
-                  src="https://scontent.fryk5-1.fna.fbcdn.net/v/t39.30808-6/662811876_122216123378515234_5314113284772806381_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=13d280&_nc_eui2=AeFhaMZMXpuzOkixw8k0cCLZKSUXAwKGgtEpJRcDAoaC0QhDI72DbxX54Zz1u_i0u0HOO4j70i0xscLod8S2MdZK&_nc_ohc=cHAHyo7SnBYQ7kNvwFY8X0V&_nc_oc=AdpKInN9zoHjkM4sigYjClKGEIh72Z25ADAZpSbD--1t1SR52qt-UojzNiG6GXDa2s0&_nc_zt=23&_nc_ht=scontent.fryk5-1.fna&_nc_gid=qAQpyvwL7OCD7q6ra21Scw&_nc_ss=7a3a8&oh=00_Af3hesns2niW-6fNvRFJiiIH-NppRMPB1ytLi-KTdxj37Q&oe=69DE9790"
+                  src="https://scontent.fryk5-1.fna.fbcdn.net/v/t39.30808-6/662811876_122216123378515234_5314113284772806381_n.jpg?stp=dst-jpg_p180x540_tt6&_nc_cat=104&ccb=1-7&_nc_sid=13d280&_nc_eui2=AeFhaMZMXpuzOkixw8k0cCLZKSUXAwKGgtEpJRcDAoaC0QhDI72DbxX54Zz1u_i0u0HOO4j70i0xscLod8S2MdZK&_nc_ohc=MARjMgUN-8UQ7kNvwEK-sN5&_nc_oc=Adp5bfseJgbBQ2D_PNr02mW3kPsZ9XAJnC-b039CEmePcFCinNAdLIGVc2lslCG6abc&_nc_zt=23&_nc_ht=scontent.fryk5-1.fna&_nc_gid=-uCUYyjS1x9M89phVYP_BA&_nc_ss=7a3a8&oh=00_Af1R_hoSXx-aGrfSbmCxNAKGztcPr6SnFMu-TinkJLgUuw&oe=69E56750"
                   alt="ACM Team"
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
