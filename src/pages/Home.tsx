@@ -98,7 +98,7 @@ export function Home() {
               
               <div className="p-8 sm:p-12 text-center">
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full overflow-hidden border-4 border-blue-100 shadow-lg">
-                  <img src="https://scontent.fryk5-1.fna.fbcdn.net/v/t39.30808-6/672598077_122217466724515234_1960607746809313137_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=13d280&_nc_eui2=AeFGjH2vX3iKftZSjUDHFf_erEiJREwcbi2sSIlETBxuLTcT7NRPSJ3OZ6HJcyZ_wZoEbp0_pMM6wP6Ba52-8mro&_nc_ohc=0v9NqgkagIkQ7kNvwHTMQmH&_nc_oc=AdrmCePOzyJOZvvj7TTv5LAZh_V-QECyzoT5uk7sUYIBz224_hi_-GUWPevIXI8AJ7I&_nc_zt=23&_nc_ht=scontent.fryk5-1.fna&_nc_gid=ywyUGyo97Gi6tSO59vJtjg&_nc_ss=7a3a8&oh=00_Af33066zkPm_xshtv02cKyFdi9oBWXJSUEzzi_VflR8c_A&oe=69E58649" />
+                  <img src="https://scontent.fkhi10-1.fna.fbcdn.net/v/t39.30808-6/672598077_122217466724515234_1960607746809313137_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=13d280&_nc_eui2=AeFGjH2vX3iKftZSjUDHFf_erEiJREwcbi2sSIlETBxuLTcT7NRPSJ3OZ6HJcyZ_wZoEbp0_pMM6wP6Ba52-8mro&_nc_ohc=0v9NqgkagIkQ7kNvwFrfGI3&_nc_oc=Adq87Yt23GCmUjF4CxbzaJxEgryyeiAIyUJuSBEjZlBzFdPQacj1mUqI4STIJST4tiw&_nc_zt=23&_nc_ht=scontent.fkhi10-1.fna&_nc_gid=w4x7uI-pJViBMOnlyPCRXw&_nc_ss=7a3a8&oh=00_Af21cqaiKLaOg_l5ZChf5kT_XBJWRlmJ7uSU5bbSDtTAww&oe=69E62F09" />
                 </div>
                 <h3 className="text-3xl font-extrabold text-slate-900 mb-2">Welcome to ACM KFUEIT!</h3>
                 <p className="text-blue-600 font-bold mb-6 uppercase tracking-wider text-sm">Message from the President</p>
