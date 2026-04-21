@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Code, Globe, Users, Zap, ChevronRight, Quote, ChevronLeft, CalendarIcon, X, PlayCircle } from 'lucide-react';
+import { ArrowRight, Code, Globe, Users, Zap, ChevronRight, Quote, ChevronLeft, CalendarIcon, X, PlayCircle, Star } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { supabase } from '../supabase';
 
@@ -33,6 +33,35 @@ export function Home() {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [motw, setMotw] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchMotw = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('members')
+          .select('*')
+          .eq('team', 'Member of the Week')
+          .limit(1)
+          .single();
+        if (data) setMotw(data);
+      } catch (err) {
+        console.error("No MOTW found");
+      }
+    };
+    fetchMotw();
+  }, []);
+
+  useEffect(() => {
+    if (window.location.hash === '#motw' && motw) {
+      setTimeout(() => {
+        const element = document.getElementById('motw');
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 500); // Wait for render
+    }
+  }, [motw]);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -98,7 +127,7 @@ export function Home() {
               
               <div className="p-8 sm:p-12 text-center">
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full overflow-hidden border-4 border-blue-100 shadow-lg">
-                  <img src="https://scontent.fkhi10-1.fna.fbcdn.net/v/t39.30808-6/672598077_122217466724515234_1960607746809313137_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=13d280&_nc_eui2=AeFGjH2vX3iKftZSjUDHFf_erEiJREwcbi2sSIlETBxuLTcT7NRPSJ3OZ6HJcyZ_wZoEbp0_pMM6wP6Ba52-8mro&_nc_ohc=0v9NqgkagIkQ7kNvwFrfGI3&_nc_oc=Adq87Yt23GCmUjF4CxbzaJxEgryyeiAIyUJuSBEjZlBzFdPQacj1mUqI4STIJST4tiw&_nc_zt=23&_nc_ht=scontent.fkhi10-1.fna&_nc_gid=w4x7uI-pJViBMOnlyPCRXw&_nc_ss=7a3a8&oh=00_Af21cqaiKLaOg_l5ZChf5kT_XBJWRlmJ7uSU5bbSDtTAww&oe=69E62F09" />
+                  <img src="https://scontent.fryk5-1.fna.fbcdn.net/v/t39.30808-6/672598077_122217466724515234_1960607746809313137_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=13d280&_nc_eui2=AeFGjH2vX3iKftZSjUDHFf_erEiJREwcbi2sSIlETBxuLTcT7NRPSJ3OZ6HJcyZ_wZoEbp0_pMM6wP6Ba52-8mro&_nc_ohc=0v9NqgkagIkQ7kNvwHTMQmH&_nc_oc=AdrmCePOzyJOZvvj7TTv5LAZh_V-QECyzoT5uk7sUYIBz224_hi_-GUWPevIXI8AJ7I&_nc_zt=23&_nc_ht=scontent.fryk5-1.fna&_nc_gid=ywyUGyo97Gi6tSO59vJtjg&_nc_ss=7a3a8&oh=00_Af33066zkPm_xshtv02cKyFdi9oBWXJSUEzzi_VflR8c_A&oe=69E58649" />
                 </div>
                 <h3 className="text-3xl font-extrabold text-slate-900 mb-2">Welcome to ACM KFUEIT!</h3>
                 <p className="text-blue-600 font-bold mb-6 uppercase tracking-wider text-sm">Message from the President</p>
@@ -202,7 +231,7 @@ export function Home() {
             >
               <div className="relative aspect-[4/3] sm:aspect-[4/3] lg:aspect-[4/5] xl:aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl border border-white/20">
                 <img 
-                  src="https://scontent.fryk5-1.fna.fbcdn.net/v/t39.30808-6/662811876_122216123378515234_5314113284772806381_n.jpg?stp=dst-jpg_p180x540_tt6&_nc_cat=104&ccb=1-7&_nc_sid=13d280&_nc_eui2=AeFhaMZMXpuzOkixw8k0cCLZKSUXAwKGgtEpJRcDAoaC0QhDI72DbxX54Zz1u_i0u0HOO4j70i0xscLod8S2MdZK&_nc_ohc=JdI_KurkLTMQ7kNvwGeoVMh&_nc_oc=Adq_iwFsSSlaASbirleNyKJvZL9FdhS8Xfz1t1hLxomp9IgPIpOi6XtF3fHxMLRL6sg&_nc_zt=23&_nc_ht=scontent.fryk5-1.fna&_nc_gid=ANthqXzwOxbQaL9E3jfqig&_nc_ss=7a3a8&oh=00_Af1PStgVFEqRnX3jwSwp_edlFHfJfq7dBhNN-w0vsSVZNQ&oe=69EC3710"
+                  src="https://scontent.fryk5-1.fna.fbcdn.net/v/t39.30808-6/662811876_122216123378515234_5314113284772806381_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=13d280&_nc_eui2=AeFhaMZMXpuzOkixw8k0cCLZKSUXAwKGgtEpJRcDAoaC0QhDI72DbxX54Zz1u_i0u0HOO4j70i0xscLod8S2MdZK&_nc_ohc=e5G_0nqsFwoQ7kNvwEBn_WJ&_nc_oc=AdoGvzPLs8q2pcFgUISfJlUTs2HDb2FXD2d6qgZaehxR8YlDkbP-BFLuUhg7_IpLmVo&_nc_zt=23&_nc_ht=scontent.fryk5-1.fna&_nc_gid=q52CkSpgKRKPlRJBgnG-jA&_nc_ss=7a3a8&oh=00_Af2y17buMxH6TDmG8C8uAwA2wjNLlYWaTaQd1-ARG0nQSw&oe=69D6E6D0"
                   alt="ACM Team"
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
@@ -289,46 +318,98 @@ export function Home() {
               </div>
               <p className="text-red-600 text-lg">{error}</p>
             </div>
-          ) : upcomingEvents.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {upcomingEvents.map((event, i) => (
-                <motion.div
-                  key={event.id}
-                  initial={{ opacity: 0, y: 40 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: i * 0.1 }}
-                  className="group rounded-3xl overflow-hidden bg-white shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-500 flex flex-col"
-                >
-                  <div className="aspect-[4/3] overflow-hidden relative m-3 rounded-2xl flex-shrink-0">
-                    <img 
-                      src={(event.image_urls && event.image_urls.length > 0) ? event.image_urls[0] : (event.image_url || `https://picsum.photos/seed/${event.id}/800/600`)} 
-                      alt={event.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                      referrerPolicy="no-referrer"
-                    />
-                    <div className="absolute top-4 left-4 z-20 px-3 py-1.5 bg-white/90 backdrop-blur-sm text-slate-900 text-xs font-bold rounded-full shadow-sm">
-                      {new Date(event.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                    </div>
-                  </div>
-                  <div className="p-6 pt-2 flex flex-col flex-grow">
-                    <h3 className="text-xl font-bold mb-2 line-clamp-1 text-slate-900">{event.title}</h3>
-                    <p className="text-slate-500 line-clamp-2 mb-6 text-sm leading-relaxed flex-grow">
-                      {event.description}
-                    </p>
-                    <Link to={`/events/${event.id}`} className="inline-flex items-center justify-center w-full py-3 rounded-xl bg-slate-100 text-slate-900 font-medium hover:bg-slate-900 hover:text-white transition-colors mt-auto">
-                      View Details
-                    </Link>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
           ) : (
-            <div className="text-center py-16 bg-white rounded-3xl border border-slate-100 shadow-sm">
-              <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
-                <CalendarIcon className="text-slate-400" />
+            <div className="flex flex-col lg:flex-row gap-8">
+              <div className={`flex-grow ${motw ? 'lg:w-2/3' : 'w-full'}`}>
+                {upcomingEvents.length > 0 ? (
+                  <div className={`grid grid-cols-1 ${motw ? 'md:grid-cols-2' : 'md:grid-cols-2 lg:grid-cols-3'} gap-6`}>
+                    {upcomingEvents.slice(0, motw ? 2 : 3).map((event, i) => (
+                      <motion.div
+                        key={event.id}
+                        initial={{ opacity: 0, y: 40 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6, delay: i * 0.1 }}
+                        className="group rounded-3xl overflow-hidden bg-white shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-500 flex flex-col h-full"
+                      >
+                        <div className="aspect-[4/3] overflow-hidden relative m-3 rounded-2xl flex-shrink-0">
+                          <img 
+                            src={(event.image_urls && event.image_urls.length > 0) ? event.image_urls[0] : (event.image_url || `https://picsum.photos/seed/${event.id}/800/600`)} 
+                            alt={event.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                            referrerPolicy="no-referrer"
+                          />
+                          <div className="absolute top-4 left-4 z-20 px-3 py-1.5 bg-white/90 backdrop-blur-sm text-slate-900 text-xs font-bold rounded-full shadow-sm">
+                            {new Date(event.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                          </div>
+                        </div>
+                        <div className="p-6 pt-2 flex flex-col flex-grow">
+                          <h3 className="text-xl font-bold mb-2 line-clamp-1 text-slate-900">{event.title}</h3>
+                          <p className="text-slate-500 line-clamp-2 mb-6 text-sm leading-relaxed flex-grow">
+                            {event.description}
+                          </p>
+                          <Link to={`/events/${event.id}`} className="inline-flex items-center justify-center w-full py-3 rounded-xl bg-slate-100 text-slate-900 font-medium hover:bg-slate-900 hover:text-white transition-colors mt-auto">
+                            View Details
+                          </Link>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-16 bg-white rounded-3xl border border-slate-100 shadow-sm h-full flex flex-col items-center justify-center">
+                    <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
+                      <CalendarIcon className="text-slate-400" />
+                    </div>
+                    <p className="text-slate-500 text-lg">No upcoming events at the moment. Stay tuned!</p>
+                  </div>
+                )}
               </div>
-              <p className="text-slate-500 text-lg">No upcoming events at the moment. Stay tuned!</p>
+
+              {motw && (
+                <div className="lg:w-1/3" id="motw">
+                  <motion.div
+                    initial={{ opacity: 0, x: 40 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                    className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-3xl p-1 shadow-2xl relative overflow-hidden h-full group flex flex-col scroll-mt-24"
+                  >
+                    <div className="absolute top-0 right-0 p-6 pointer-events-none opacity-20 group-hover:opacity-40 transition-opacity duration-500">
+                      <Star size={120} className="text-white -rotate-12" />
+                    </div>
+                    
+                    <div className="bg-white/10 backdrop-blur-md w-full h-full rounded-[23px] p-8 flex flex-col relative z-10 border border-white/20">
+                      <div className="flex items-center gap-3 mb-8">
+                        <div className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-yellow-900 shadow-lg">
+                          <Star size={20} fill="currentColor" />
+                        </div>
+                        <h3 className="text-xl font-bold text-white tracking-wide">Member of the Week</h3>
+                      </div>
+                      
+                      <div className="flex flex-col items-center text-center mb-6">
+                        <div className="w-32 h-32 rounded-full border-4 border-white shadow-xl overflow-hidden mb-4 bg-slate-100">
+                          <img 
+                            src={motw.image_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${motw.name}`} 
+                            alt={motw.name} 
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <h4 className="text-2xl font-extrabold text-white mb-1">{motw.name}</h4>
+                        <p className="text-blue-200 font-medium text-sm mb-1">{motw.role}</p>
+                        {motw.registration_number && (
+                          <p className="text-blue-300 text-xs font-mono">{motw.registration_number}</p>
+                        )}
+                      </div>
+                      
+                      <div className="bg-white/10 rounded-2xl p-5 border border-white/10 flex-grow mt-auto">
+                        <p className="text-blue-50 text-sm italic leading-relaxed">
+                          "{motw.social_links?.contribution}"
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                </div>
+              )}
             </div>
           )}
         </div>

@@ -48,7 +48,7 @@ const compressImage = (file: File, maxWidth = 800, maxHeight = 800, quality = 0.
 };
 
 export function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState<'events' | 'members'>('events');
+  const [activeTab, setActiveTab] = useState<'events' | 'members' | 'motw'>('events');
   const [events, setEvents] = useState<any[]>([]);
   const [members, setMembers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -57,10 +57,14 @@ export function AdminDashboard() {
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean, title: string, message: string, onConfirm: () => void }>({ isOpen: false, title: '', message: '', onConfirm: () => {} });
 
   // Form states
   const [eventForm, setEventForm] = useState({ title: '', description: '', date: '', imageUrl: '', imageUrls: [] as string[], status: 'upcoming' });
   const [memberForm, setMemberForm] = useState({ name: '', role: '', team: 'Core', registrationNumber: '', skills: '', imageUrl: '', tiktok: '', instagram: '', youtube: '', sortOrder: 999 });
+  const [motwForm, setMotwForm] = useState({ name: '', role: '', registrationNumber: '', contribution: '', imageUrl: '' });
+  const [motwImageFile, setMotwImageFile] = useState<File | null>(null);
+  const [motwId, setMotwId] = useState<string | null>(null);
   
   const [eventImageFiles, setEventImageFiles] = useState<File[]>([]);
   const [memberImageFile, setMemberImageFile] = useState<File | null>(null);
@@ -78,7 +82,23 @@ export function AdminDashboard() {
       if (membersResponse.error) throw membersResponse.error;
       
       setEvents(eventsResponse.data || []);
-      setMembers(membersResponse.data || []);
+      const membersData = membersResponse.data || [];
+      setMembers(membersData.filter(m => m.team !== 'Member of the Week'));
+      
+      const motw = membersData.find(m => m.team === 'Member of the Week');
+      if (motw) {
+         setMotwId(motw.id);
+         setMotwForm({
+            name: motw.name,
+            role: motw.role,
+            registrationNumber: motw.registration_number || '',
+            contribution: motw.social_links?.contribution || '',
+            imageUrl: motw.image_url || ''
+         });
+      } else {
+         setMotwId(null);
+         setMotwForm({ name: '', role: '', registrationNumber: '', contribution: '', imageUrl: '' });
+      }
     } catch (error) {
       console.error("Fetch error:", error);
       toast.error("Failed to fetch data");
@@ -146,16 +166,95 @@ export function AdminDashboard() {
   };
 
   const handleDeleteEvent = async (id: string) => {
-    if (confirm("Are you sure you want to delete this event?")) {
-      try {
-        const { error } = await supabase.from('events').delete().eq('id', id);
-        if (error) throw error;
-        toast.success("Event deleted");
-        fetchData();
-      } catch (error) {
-        toast.error("Failed to delete event");
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete Event',
+      message: 'Are you sure you want to delete this event? This action cannot be undone.',
+      onConfirm: async () => {
+        try {
+          const { error } = await supabase.from('events').delete().eq('id', id);
+          if (error) throw error;
+          toast.success("Event deleted");
+          fetchData();
+        } catch (error) {
+          toast.error("Failed to delete event");
+        }
+        setConfirmModal({ ...confirmModal, isOpen: false });
       }
+    });
+  };
+
+  const handleMotwSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setIsUploading(true);
+    try {
+      let finalImageUrl = motwForm.imageUrl;
+      if (motwImageFile) {
+        try {
+          finalImageUrl = await compressImage(motwImageFile);
+        } catch (err) {
+          console.error(err);
+          toast.error("Fixed Image compression failed");
+          setIsUploading(false);
+          return;
+        }
+      }
+      
+      const data = {
+        name: motwForm.name,
+        role: motwForm.role,
+        team: 'Member of the Week',
+        registration_number: motwForm.registrationNumber,
+        image_url: finalImageUrl,
+        social_links: {
+          contribution: motwForm.contribution
+        }
+      };
+
+      if (motwId) {
+        const { error } = await supabase.from('members').update(data).eq('id', motwId);
+        if (error) throw error;
+        toast.success("Member of the Week updated");
+      } else {
+        const { error } = await supabase.from('members').insert([data]);
+        if (error) throw error;
+        toast.success("Member of the Week set");
+      }
+      fetchData();
+    } catch(err:any) {
+      toast.error("Failed to save Member of the Week");
+      console.error(err);
+    } finally {
+      setIsUploading(false);
     }
+  };
+
+  const handleMotwDelete = async () => {
+    if (!motwId) return;
+    setConfirmModal({
+      isOpen: true,
+      title: 'Remove Member of the Week',
+      message: 'Are you sure you want to remove the Member of the Week?',
+      onConfirm: async () => {
+        try {
+          const { error } = await supabase.from('members').delete().eq('id', motwId);
+          if (error) throw error;
+          toast.success("Member of the Week removed");
+          setMotwImageFile(null);
+          fetchData();
+        } catch (error: any) {
+          console.error("Delete MOTW error:", error);
+          toast.error(error.message || "Failed to remove Member of the Week");
+        }
+        setConfirmModal({ ...confirmModal, isOpen: false });
+      }
+    });
+  };
+
+  const handleMotwShare = () => {
+    const url = `${window.location.origin}/#motw`;
+    navigator.clipboard.writeText(url);
+    toast.success("Link copied to clipboard!");
   };
 
   // Member Handlers
@@ -211,16 +310,22 @@ export function AdminDashboard() {
   };
 
   const handleDeleteMember = async (id: string) => {
-    if (confirm("Are you sure you want to delete this member?")) {
-      try {
-        const { error } = await supabase.from('members').delete().eq('id', id);
-        if (error) throw error;
-        toast.success("Member deleted");
-        fetchData();
-      } catch (error) {
-        toast.error("Failed to delete member");
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete Member',
+      message: 'Are you sure you want to delete this member? This action cannot be undone.',
+      onConfirm: async () => {
+        try {
+          const { error } = await supabase.from('members').delete().eq('id', id);
+          if (error) throw error;
+          toast.success("Member deleted");
+          fetchData();
+        } catch (error) {
+          toast.error("Failed to delete member");
+        }
+        setConfirmModal({ ...confirmModal, isOpen: false });
       }
-    }
+    });
   };
 
   const openEventModal = (event?: any) => {
@@ -308,6 +413,12 @@ export function AdminDashboard() {
           >
             Manage Members
           </button>
+          <button
+            onClick={() => setActiveTab('motw')}
+            className={`pb-4 px-2 font-bold transition-colors ${activeTab === 'motw' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-slate-500 hover:text-slate-800'}`}
+          >
+            Member of the Week
+          </button>
         </div>
 
         {loading ? (
@@ -315,9 +426,9 @@ export function AdminDashboard() {
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
           </div>
         ) : (
-          <div>
+          <div className="relative">
             {/* Events Tab */}
-            {activeTab === 'events' && (
+            <div style={{ display: activeTab === 'events' ? 'block' : 'none' }}>
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                 <div className="flex justify-between items-center mb-6">
                   <h2 className="text-2xl font-bold text-slate-900">Events ({events.length})</h2>
@@ -363,10 +474,10 @@ export function AdminDashboard() {
                   </table>
                 </div>
               </motion.div>
-            )}
+            </div>
 
             {/* Members Tab */}
-            {activeTab === 'members' && (
+            <div style={{ display: activeTab === 'members' ? 'block' : 'none' }}>
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                 <div className="flex justify-between items-center mb-6">
                   <h2 className="text-2xl font-bold text-slate-900">Members ({members.length})</h2>
@@ -409,7 +520,62 @@ export function AdminDashboard() {
                   </table>
                 </div>
               </motion.div>
-            )}
+            </div>
+
+            {/* MOTW Tab */}
+            <div style={{ display: activeTab === 'motw' ? 'block' : 'none' }}>
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-xl mx-auto">
+                <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm p-6 sm:p-8">
+                  <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                    <span className="text-yellow-500">★</span> Member of the Week
+                  </h2>
+                  <form onSubmit={handleMotwSubmit} className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-1 text-slate-700">Name</label>
+                      <input type="text" required value={motwForm.name} onChange={e => setMotwForm({...motwForm, name: e.target.value})} className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-1 text-slate-700">Role</label>
+                        <input type="text" required value={motwForm.role} onChange={e => setMotwForm({...motwForm, role: e.target.value})} className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1 text-slate-700">Registration #</label>
+                        <input type="text" value={motwForm.registrationNumber} onChange={e => setMotwForm({...motwForm, registrationNumber: e.target.value})} className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none" />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1 text-slate-700">Weekly Contribution</label>
+                      <textarea required rows={4} value={motwForm.contribution} onChange={e => setMotwForm({...motwForm, contribution: e.target.value})} placeholder="What makes them the member of the week?" className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 resize-none focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1 text-slate-700">Image</label>
+                      <input type="file" accept="image/*" onChange={e => setMotwImageFile(e.target.files?.[0] || null)} className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+                      {(motwImageFile || motwForm.imageUrl) && (
+                        <div className="mt-4 w-24 h-24 rounded-full overflow-hidden border-2 border-slate-200 bg-slate-100">
+                          <img src={motwImageFile ? URL.createObjectURL(motwImageFile) : motwForm.imageUrl} alt="Preview" className="w-full h-full object-cover" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="pt-4 border-t border-slate-200 flex flex-col sm:flex-row gap-3">
+                      <button type="submit" disabled={isUploading} className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                        {isUploading ? 'Saving...' : 'Save Member of the Week'}
+                      </button>
+                      {motwId && (
+                        <>
+                          <button type="button" onClick={handleMotwShare} className="px-4 py-3 bg-slate-100 text-slate-700 rounded-lg font-bold hover:bg-slate-200 transition-colors whitespace-nowrap">
+                            Copy Link
+                          </button>
+                          <button type="button" onClick={handleMotwDelete} className="px-4 py-3 bg-red-50 text-red-600 rounded-lg font-bold hover:bg-red-100 transition-colors whitespace-nowrap">
+                            Remove
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </form>
+                </div>
+              </motion.div>
+            </div>
           </div>
         )}
       </main>
@@ -575,6 +741,30 @@ export function AdminDashboard() {
                 </button>
               </div>
             </form>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Confirmation Modal */}
+      {confirmModal.isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl p-6">
+            <h3 className="text-xl font-bold text-slate-900 mb-2">{confirmModal.title}</h3>
+            <p className="text-slate-600 mb-6">{confirmModal.message}</p>
+            <div className="flex justify-end gap-3">
+              <button 
+                onClick={() => setConfirmModal({ ...confirmModal, isOpen: false })} 
+                className="px-4 py-2 font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={confirmModal.onConfirm} 
+                className="px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Delete
+              </button>
+            </div>
           </motion.div>
         </div>
       )}
