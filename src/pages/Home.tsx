@@ -55,7 +55,7 @@ export function Home() {
             className="relative z-10 w-full h-full object-contain scale-125 hover:scale-[1.35] transition-transform duration-700 pointer-events-none drop-shadow-[0_0_30px_rgba(37,99,235,0.4)]"
             style={{ mixBlendMode: 'screen' }}
           >
-             <source src="/130273-746686709_medium.mp4" type="video/mp4"/>
+             <source src="https://x.com/hananirfan91/status/2089295387685515656/video/1" type="video/mp4"/>
              Your browser does not support the video tag.
           </video>
         </motion.div>
