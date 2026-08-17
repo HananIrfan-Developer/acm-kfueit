@@ -1,11 +1,40 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary-blue: #2563EB;
-  --color-hover-blue: #1D4ED8;
-  --color-teal-accent: #14B8A6;
+    --color-background: #020617;
+    --color-foreground: #f8fafc;
+    --color-primary: #3b82f6;
+    --color-secondary: #0ea5e9;
+    --color-accent: #06b6d4;
 }
 
-body {
-  transition: background-color 0.3s ease, color 0.3s ease;
+@layer base {
+  :root {
+    --background: #020617;
+    --foreground: #f8fafc;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    @apply antialiased selection:bg-blue-500/30;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-slate-900/40 backdrop-blur-xl border border-white/5 shadow-2xl;
+  }
+  
+  .text-glow {
+    text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+  }
+  
+  .box-glow {
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.15);
+  }
 }

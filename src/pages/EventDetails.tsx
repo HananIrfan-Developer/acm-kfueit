@@ -1,172 +1,108 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from '../supabase';
-import { Calendar as CalendarIcon, ArrowLeft, MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, MapPin, Clock, Users, ArrowLeft } from 'lucide-react';
 
 export function EventDetails() {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams();
   const [event, setEvent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
-    const fetchEvent = async () => {
+    async function fetchEvent() {
       if (!id) return;
-      try {
-        const { data, error } = await supabase.from('events').select('*').eq('id', id).single();
-        
-        if (error) throw error;
-        
-        if (data) {
-          setEvent(data);
-        } else {
-          console.log("No such document!");
-        }
-      } catch (error) {
-        console.error("Error fetching event:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      const { data } = await supabase.from('events').select('*').eq('id', id).single();
+      if (data) setEvent(data);
+      setLoading(false);
+    }
     fetchEvent();
   }, [id]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
-
-  if (!event) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
-        <h2 className="text-3xl font-bold text-slate-800 mb-4">Event not found</h2>
-        <Link to="/events" className="text-blue-600 hover:underline flex items-center gap-2">
-          <ArrowLeft size={16} /> Back to Events
-        </Link>
-      </div>
-    );
-  }
-
-  const images = event.image_urls && event.image_urls.length > 0 
-    ? event.image_urls 
-    : [event.image_url || `https://picsum.photos/seed/${event.id}/1200/600`];
-
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % images.length);
-  };
-
-  const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
-  };
+  if (loading) return <div className="min-h-screen pt-32 pb-20 text-center text-white">Loading...</div>;
+  if (!event) return <div className="min-h-screen pt-32 pb-20 text-center text-white">Event not found.</div>;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pt-24 pb-20">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Link to="/events" className="inline-flex items-center gap-2 text-slate-500 hover:text-blue-600 transition-colors mb-8 font-medium">
-          <ArrowLeft size={18} /> Back to Events
+    <div className="min-h-screen pt-32 pb-20 relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <Link to="/events" className="inline-flex items-center text-slate-400 hover:text-white mb-8 transition-colors">
+          <ArrowLeft size={16} className="mr-2" /> Back to Events
         </Link>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100"
-        >
-          <div className="aspect-video w-full relative group bg-slate-900">
-            <AnimatePresence mode="wait">
-              <motion.img 
-                key={currentImageIndex}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                src={images[currentImageIndex]} 
-                alt={`${event.title} - Image ${currentImageIndex + 1}`}
-                className="w-full h-full object-contain"
-                referrerPolicy="no-referrer"
-              />
-            </AnimatePresence>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          {/* Main Content */}
+          <div className="lg:col-span-2">
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">{event.title}</h1>
             
-            <div className="absolute top-6 right-6 px-4 py-2 bg-white/90 backdrop-blur-md rounded-full shadow-lg font-bold text-sm uppercase tracking-wider text-slate-800 z-10">
-              {event.status}
+            <div className="flex flex-wrap gap-6 mb-10 text-slate-300">
+              <div className="flex items-center gap-2"><Calendar size={20} className="text-blue-400" /> {new Date(event.date).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+              <div className="flex items-center gap-2"><Clock size={20} className="text-blue-400" /> 10:00 AM - 02:00 PM</div>
+              <div className="flex items-center gap-2"><MapPin size={20} className="text-blue-400" /> KFUEIT, Rahim Yar Khan</div>
+            </div>
+            
+            <div className="relative aspect-video rounded-3xl overflow-hidden mb-12 glass-panel p-2">
+              <img loading="lazy" src={event.image_url || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87'} alt={event.title} className="w-full h-full object-cover rounded-2xl" />
+            </div>
+            
+            <div className="glass-panel p-8 md:p-12 rounded-3xl mb-12">
+              <h2 className="text-2xl font-bold text-white mb-6 uppercase tracking-widest border-b border-white/10 pb-4">ABOUT THIS EVENT</h2>
+              <div className="prose prose-invert prose-blue max-w-none">
+                <p className="text-slate-300 leading-relaxed whitespace-pre-wrap">{event.description}</p>
+              </div>
             </div>
 
-            {images.length > 1 && (
-              <>
-                <button 
-                  onClick={prevImage}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 hover:bg-white text-slate-800 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-md z-10"
-                >
-                  <ChevronLeft size={24} />
-                </button>
-                <button 
-                  onClick={nextImage}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 hover:bg-white text-slate-800 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-md z-10"
-                >
-                  <ChevronRight size={24} />
-                </button>
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-                  {images.map((_: any, idx: number) => (
-                    <button
-                      key={idx}
-                      onClick={() => setCurrentImageIndex(idx)}
-                      className={`w-2 h-2 rounded-full transition-all ${idx === currentImageIndex ? 'bg-white w-6' : 'bg-white/50 hover:bg-white/80'}`}
-                    />
-                  ))}
-                </div>
-              </>
-            )}
+            <div className="glass-panel p-8 md:p-12 rounded-3xl">
+              <h2 className="text-2xl font-bold text-white mb-6 uppercase tracking-widest border-b border-white/10 pb-4">EVENT HIGHLIGHTS</h2>
+              <ul className="space-y-4">
+                <li className="flex items-center gap-3 text-slate-300"><div className="w-2 h-2 bg-blue-500 rounded-full"></div> HTML, CSS, JavaScript framework</li>
+                <li className="flex items-center gap-3 text-slate-300"><div className="w-2 h-2 bg-blue-500 rounded-full"></div> Hands-on Coding Sessions</li>
+                <li className="flex items-center gap-3 text-slate-300"><div className="w-2 h-2 bg-blue-500 rounded-full"></div> Real-world Projects</li>
+                <li className="flex items-center gap-3 text-slate-300"><div className="w-2 h-2 bg-blue-500 rounded-full"></div> Certificates for Participants</li>
+              </ul>
+            </div>
           </div>
-
-          <div className="p-8 md:p-12">
-            <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 leading-tight">
-              {event.title}
-            </h1>
-
-            <div className="flex flex-wrap gap-6 mb-10 pb-10 border-b border-slate-100">
-              <div className="flex items-center gap-3 text-slate-600">
-                <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
-                  <CalendarIcon size={24} />
+          
+          {/* Sidebar */}
+          <div className="space-y-8">
+            <div className="glass-panel p-8 rounded-3xl sticky top-32">
+              <h3 className="text-xl font-bold text-white mb-6 uppercase tracking-widest">EVENT DETAILS</h3>
+              
+              <div className="space-y-6 mb-8">
+                <div>
+                  <p className="text-slate-500 text-sm mb-1 uppercase">Date</p>
+                  <p className="text-white font-medium">{new Date(event.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-400">Date</p>
-                  <p className="font-bold text-slate-800">
-                    {new Date(event.date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                  </p>
+                  <p className="text-slate-500 text-sm mb-1 uppercase">Time</p>
+                  <p className="text-white font-medium">10:00 AM - 02:00 PM</p>
+                </div>
+                <div>
+                  <p className="text-slate-500 text-sm mb-1 uppercase">Venue</p>
+                  <p className="text-white font-medium">KFUEIT, Rahim Yar Khan</p>
+                </div>
+                <div>
+                  <p className="text-slate-500 text-sm mb-1 uppercase">Organized by</p>
+                  <p className="text-white font-medium">ACM KFUEIT</p>
                 </div>
               </div>
               
-              <div className="flex items-center gap-3 text-slate-600">
-                <div className="w-12 h-12 rounded-full bg-teal-50 flex items-center justify-center text-teal-600">
-                  <MapPin size={24} />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-slate-400">Location</p>
-                  <p className="font-bold text-slate-800">KFUEIT Campus</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="prose prose-lg prose-slate max-w-none">
-              <h3 className="text-2xl font-bold mb-4 text-slate-800">About this event</h3>
-              <p className="text-slate-600 leading-relaxed whitespace-pre-wrap">
-                {event.description}
-              </p>
+              <button className="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all shadow-lg text-center">
+                Register Now
+              </button>
             </div>
             
-            {event.status === 'upcoming' && (
-              <div className="mt-12 pt-8 border-t border-slate-100 flex justify-center">
-                <Link to="/contact" className="px-8 py-4 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20">
-                  Register for Event
-                </Link>
+            <div className="glass-panel p-8 rounded-3xl">
+              <h3 className="text-lg font-bold text-white mb-6 uppercase tracking-widest">SPEAKERS / ORGANIZERS</h3>
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 rounded-full bg-blue-500/20"></div>
+                <div>
+                  <p className="text-white font-bold">Ahmad Ali</p>
+                  <p className="text-slate-400 text-sm">Tech Lead</p>
+                </div>
               </div>
-            )}
+            </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );

@@ -1,30 +1,47 @@
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useEffect, useState, ReactNode } from 'react';
 import { supabase } from '../supabase';
 
 export function ProtectedRoute({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user?.email === 'hananirfan81@gmail.com') {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        setIsAuthenticated(false);
+        setLoading(false);
+        return;
+      }
+
+      const email = session.user.email;
+      if (email === 'hananirfan91@gmail.com' || email === 'acmkfueitt@gmail.com') {
         setIsAuthenticated(true);
       } else {
-        setIsAuthenticated(false);
+        // Check if user has roles in user_roles table
+        const { data, error } = await supabase
+          .from('user_roles')
+          .select('*')
+          .eq('email', email)
+          .single();
+          
+        if (data && (data.role_events || data.role_news || data.role_members)) {
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+        }
       }
       setLoading(false);
-    });
+    };
+
+    checkAuth();
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user?.email === 'hananirfan81@gmail.com') {
-        setIsAuthenticated(true);
-      } else {
-        setIsAuthenticated(false);
-      }
-      setLoading(false);
+    } = supabase.auth.onAuthStateChange(() => {
+      checkAuth();
     });
 
     return () => subscription.unsubscribe();
@@ -39,7 +56,11 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/admin/login" replace />;
+    // If they were trying to access admin, send them to profile
+    if (location.pathname.startsWith('/admin')) {
+        return <Navigate to="/profile" replace />;
+    }
+    return <Navigate to="/login" replace />;
   }
 
   return <>{children}</>;

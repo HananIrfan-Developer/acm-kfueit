@@ -1,233 +1,178 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { supabase } from '../supabase';
-import { Search, Filter, Calendar as CalendarIcon } from 'lucide-react';
-import { cn } from '../lib/utils';
-
-import { Link } from 'react-router-dom';
+import { CalendarIcon, MapPin, Clock, Mic, Image, Layout, ArrowRight, Shield } from 'lucide-react';
 
 export function Events() {
   const [events, setEvents] = useState<any[]>([]);
+  const [highlights, setHighlights] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filter, setFilter] = useState<'all' | 'upcoming' | 'completed'>('all');
 
   useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('events')
-          .select('*')
-          .order('date', { ascending: false });
-          
-        if (error) throw error;
-        setEvents(data || []);
-      } catch (error: any) {
-        console.error("Error fetching events:", error);
-        setError("Failed to load events. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchEvents();
+    async function fetchData() {
+      const { data: eData } = await supabase.from('events').select('*').order('date', { ascending: false });
+      if (eData) setEvents(eData);
+
+      const { data: hData } = await supabase.from('highlights').select('*').order('created_at', { ascending: false }).limit(4);
+      if (hData) setHighlights(hData);
+
+      setLoading(false);
+    }
+    fetchData();
   }, []);
 
-  const filteredEvents = events.filter(event => {
-    const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          event.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filter === 'all' || event.status === filter;
-    return matchesSearch && matchesFilter;
-  });
+  const upcomingEvents = events.filter(e => new Date(e.date) >= new Date());
+  const pastEvents = events.filter(e => new Date(e.date) < new Date());
 
-  const upcomingEvents = filteredEvents.filter(e => e.status === 'upcoming');
-  const pastEvents = filteredEvents.filter(e => e.status === 'completed');
+  const categories = [
+    { name: 'Workshops', icon: <Layout />, desc: 'Hands-on technical sessions' },
+    { name: 'Seminars', icon: <Mic />, desc: 'Insights from industry leaders' },
+    { name: 'Hackathons', icon: <Clock />, desc: 'Competitive coding challenges' },
+  ];
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors duration-300 py-24 relative overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-blue-100/50 to-transparent pointer-events-none"></div>
-      <div className="absolute top-40 right-10 w-72 h-72 bg-teal-100/50 rounded-full blur-3xl pointer-events-none"></div>
+    <div className="min-h-screen pt-32 pb-20 relative">
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[100px] pointer-events-none"></div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
-        <div className="text-center mb-16">
-          <motion.h1 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 text-blue-600"
-          >
-            Events & Activities
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.1 }}
-            className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto"
-          >
-            Discover our upcoming workshops, seminars, and hackathons. Join us to learn, build, and innovate.
-          </motion.p>
-        </div>
+        {/* 1. Header */}
+        <section className="mb-20 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 uppercase tracking-tight">EVENTS</h1>
+          <p className="text-slate-400 text-lg max-w-2xl mx-auto">
+            Explore our upcoming, ongoing and past events. Learn, participate and grow with ACM KFUEIT.
+          </p>
+        </section>
 
-        {/* Controls */}
-        <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-12 bg-white p-4 rounded-2xl border border-slate-200 shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
-          <div className="relative w-full md:w-96">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500" size={20} />
-            <input 
-              type="text" 
-              placeholder="Search events..." 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all shadow-inner"
-            />
-          </div>
-          <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 hide-scrollbar">
-            <Filter size={20} className="text-blue-500 mr-2 flex-shrink-0" />
-            {(['all', 'upcoming', 'completed'] as const).map((f) => (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={cn(
-                  "px-6 py-2.5 rounded-xl text-sm font-bold capitalize whitespace-nowrap transition-all duration-300",
-                  filter === f 
-                    ? "bg-blue-600 text-white shadow-md" 
-                    : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200"
-                )}
-              >
-                {f}
-              </button>
+        {/* 2. Categories */}
+        <section className="mb-24">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {categories.map((cat, i) => (
+              <div key={i} className="glass-panel p-8 rounded-3xl flex items-center gap-6 hover:bg-white/5 transition-colors">
+                <div className="w-14 h-14 bg-blue-500/20 text-blue-400 rounded-2xl flex items-center justify-center shrink-0">
+                  {cat.icon}
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-white mb-1 uppercase tracking-wide">{cat.name}</h3>
+                  <p className="text-slate-400 text-sm">{cat.desc}</p>
+                </div>
+              </div>
             ))}
           </div>
-        </div>
-
-        {loading ? (
+        </section>
+        
+        {/* 3. Upcoming Events */}
+        <section className="mb-24">
+          <h2 className="text-2xl font-bold text-blue-400 mb-8 uppercase tracking-widest border-b border-white/10 pb-4">UPCOMING EVENTS</h2>
+          
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[1, 2, 3, 4, 5, 6].map(i => (
-              <div key={i} className="animate-pulse bg-white rounded-3xl h-[400px] border border-slate-200 shadow-sm"></div>
-            ))}
+            {loading ? (
+              <div className="col-span-full text-center text-slate-500 py-10">Loading events...</div>
+            ) : upcomingEvents.length > 0 ? (
+              upcomingEvents.map((event, i) => (
+                <motion.div key={event.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="glass-panel rounded-3xl overflow-hidden group flex flex-col h-full border border-white/10 hover:border-blue-500/50 transition-colors shadow-2xl">
+                  <div className="relative aspect-video overflow-hidden">
+                    <img loading="lazy" src={event.image_url || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87'} alt={event.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-transparent opacity-90"></div>
+                  </div>
+                  <div className="p-8 flex flex-col flex-grow relative z-10 -mt-10">
+                    <div className="w-12 h-12 bg-blue-600 rounded-xl flex flex-col items-center justify-center text-white shadow-lg mb-4 border border-blue-400/50">
+                      <span className="text-xs uppercase font-bold leading-none">{new Date(event.date).toLocaleDateString(undefined, { month: 'short' })}</span>
+                      <span className="text-lg font-extrabold leading-none">{new Date(event.date).toLocaleDateString(undefined, { day: '2-digit' })}</span>
+                    </div>
+                    <h3 className="text-xl font-bold text-white mb-4 line-clamp-2">{event.title}</h3>
+                    <div className="flex items-center gap-2 text-sm text-slate-400 mb-6">
+                      <MapPin size={16} className="text-blue-400" /> KFUEIT, Rahim Yar Khan
+                    </div>
+                    <Link to={`/events/${event.id}`} className="mt-auto block text-center py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition-all font-bold shadow-lg shadow-blue-500/20">
+                      Register Now
+                    </Link>
+                  </div>
+                </motion.div>
+              ))
+            ) : (
+              <div className="col-span-full py-16 text-center glass-panel rounded-3xl border border-dashed border-white/20">
+                <Shield className="mx-auto text-slate-600 mb-4" size={48}/>
+                <h3 className="text-white font-bold text-xl mb-2">No Upcoming Events</h3>
+                <p className="text-slate-400">Stay tuned! Our committee is planning something amazing.</p>
+              </div>
+            )}
           </div>
-        ) : error ? (
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-center py-24 bg-red-50 rounded-3xl border border-red-200 shadow-sm"
-          >
-            <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6 border border-red-200">
-              <span className="text-red-500 text-3xl font-bold">!</span>
+        </section>
+
+        {/* 4. Past Events */}
+        <section className="mb-24">
+          <h2 className="text-2xl font-bold text-blue-400 mb-8 uppercase tracking-widest border-b border-white/10 pb-4">PAST EVENTS ARCHIVE</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {pastEvents.length > 0 ? (
+              pastEvents.map((event, i) => (
+                <Link key={event.id} to={`/events/${event.id}`} className="block group">
+                  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="glass-panel rounded-2xl overflow-hidden hover:border-blue-500/30 transition-colors">
+                    <div className="relative aspect-video">
+                      <img loading="lazy" src={event.image_url || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87'} alt={event.title} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" />
+                    </div>
+                    <div className="p-4 bg-slate-900/50 backdrop-blur-md">
+                      <h3 className="text-sm font-bold text-white line-clamp-1">{event.title}</h3>
+                      <p className="text-xs text-blue-400 mt-1 flex items-center gap-1"><CalendarIcon size={12}/> {new Date(event.date).toLocaleDateString()}</p>
+                    </div>
+                  </motion.div>
+                </Link>
+              ))
+            ) : (
+              <div className="col-span-full text-slate-500">No past events found.</div>
+            )}
+          </div>
+        </section>
+
+        {/* 5. Event Gallery */}
+        <section className="mb-24">
+           <h2 className="text-2xl font-bold text-blue-400 mb-8 uppercase tracking-widest border-b border-white/10 pb-4">EVENT HIGHLIGHTS</h2>
+           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+             {highlights.length > 0 ? (
+               highlights.map((h) => (
+                 <div key={h.id} className="relative aspect-square rounded-2xl overflow-hidden glass-panel group">
+                   <img loading="lazy" src={h.image_url} className="w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" alt="Gallery"/>
+                   <div className="absolute inset-0 bg-blue-600/20 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                 </div>
+               ))
+             ) : (
+               [
+                 'https://images.unsplash.com/photo-1515187029135-18ee286d815b',
+                 'https://images.unsplash.com/photo-1540575467063-178a50c2df87',
+                 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678',
+                 'https://images.unsplash.com/photo-1522071820081-009f0129c71c'
+               ].map((img, idx) => (
+                 <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden glass-panel group">
+                   <img loading="lazy" src={`${img}?auto=format&fit=crop&w=500&q=80`} className="w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" alt="Gallery"/>
+                   <div className="absolute inset-0 bg-blue-600/20 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                 </div>
+               ))
+             )}
+           </div>
+        </section>
+
+        {/* 6. Call for Speakers */}
+        <section className="mt-24">
+          <div className="glass-panel p-12 rounded-3xl grid grid-cols-1 md:grid-cols-2 gap-10 items-center bg-gradient-to-br from-[#060b24] to-[#020617] border-blue-500/20">
+            <div>
+              <h3 className="text-3xl font-bold text-white mb-4 uppercase">Want to speak at our next event?</h3>
+              <p className="text-slate-400 mb-6">We are always looking for passionate students and professionals to share their knowledge with the community.</p>
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center gap-3 text-slate-300"><div className="w-2 h-2 bg-blue-500 rounded-full"></div> Share your expertise</li>
+                <li className="flex items-center gap-3 text-slate-300"><div className="w-2 h-2 bg-blue-500 rounded-full"></div> Build your personal brand</li>
+                <li className="flex items-center gap-3 text-slate-300"><div className="w-2 h-2 bg-blue-500 rounded-full"></div> Connect with tech enthusiasts</li>
+              </ul>
+              <Link to="/join" className="inline-block px-8 py-3 bg-white text-slate-900 rounded-lg font-bold hover:bg-slate-200 transition-colors">Apply as Speaker</Link>
             </div>
-            <h3 className="text-2xl font-bold text-red-800 mb-2">Error Loading Events</h3>
-            <p className="text-red-600 text-lg">{error}</p>
-          </motion.div>
-        ) : (
-          <>
-            {(filter === 'all' || filter === 'upcoming') && upcomingEvents.length > 0 && (
-              <div className="mb-20">
-                <h2 className="text-3xl font-bold mb-8 flex items-center gap-3 text-slate-900">
-                  <span className="relative flex h-4 w-4">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-4 w-4 bg-blue-600"></span>
-                  </span>
-                  Upcoming Events
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {upcomingEvents.map((event, i) => (
-                    <EventCard key={event.id} event={event} index={i} />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {(filter === 'all' || filter === 'completed') && pastEvents.length > 0 && (
-              <div>
-                <h2 className="text-3xl font-bold mb-8 text-slate-500 flex items-center gap-3">
-                  <div className="w-4 h-4 rounded-full bg-slate-400"></div>
-                  Past Events
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {pastEvents.map((event, i) => (
-                    <EventCard key={event.id} event={event} index={i} isPast />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {filteredEvents.length === 0 && (
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="text-center py-24 bg-white rounded-3xl border border-slate-200 shadow-sm"
-              >
-                <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 border border-slate-100">
-                  <CalendarIcon size={40} className="text-blue-500" />
-                </div>
-                <h3 className="text-2xl font-bold text-slate-800 mb-2">No events found</h3>
-                <p className="text-slate-500 text-lg">Try adjusting your search or filters to find what you're looking for.</p>
-              </motion.div>
-            )}
-          </>
-        )}
+            <div className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 flex items-center justify-center p-8 bg-blue-950/20">
+              <img loading="lazy" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPHaOyU7EMjnlbQp59hxvBpuJ7fQ2DDu6zCQ&s" alt="Speaker" className="max-w-full max-h-full object-contain" />
+            </div>
+          </div>
+        </section>
+        
       </div>
     </div>
-  );
-}
-
-function EventCard({ event, index, isPast = false }: { event: any, index: number, isPast?: boolean, key?: any }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1, duration: 0.5 }}
-      className={cn(
-        "group rounded-3xl overflow-hidden bg-white border border-slate-200 shadow-[0_4px_12px_rgba(0,0,0,0.08)] flex flex-col h-full transition-all duration-500",
-        isPast ? "opacity-80 hover:opacity-100" : "hover:shadow-[0_8px_24px_rgba(37,99,235,0.12)] hover:-translate-y-2"
-      )}
-    >
-      <div className="aspect-[4/3] overflow-hidden relative">
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent z-10"></div>
-        <img 
-          src={(event.image_urls && event.image_urls.length > 0) ? event.image_urls[0] : (event.image_url || `https://picsum.photos/seed/${event.id}/800/600`)} 
-          alt={event.title}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-          referrerPolicy="no-referrer"
-        />
-        <div className={cn(
-          "absolute top-4 right-4 z-20 px-4 py-1.5 text-white text-xs font-bold rounded-full uppercase tracking-wider backdrop-blur-md",
-          event.status === 'upcoming' 
-            ? "bg-blue-600/90 shadow-sm border border-blue-400/50" 
-            : "bg-slate-600/90 border border-slate-500/50"
-        )}>
-          {event.status}
-        </div>
-        <div className="absolute bottom-4 left-4 z-20 flex items-center gap-2 text-blue-300 font-medium text-sm bg-slate-900/50 px-3 py-1.5 rounded-lg backdrop-blur-md border border-white/10">
-          <CalendarIcon size={14} />
-          {new Date(event.date).toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
-        </div>
-      </div>
-      <div className="p-6 flex flex-col flex-grow relative">
-        <h3 className={cn(
-          "text-2xl font-bold mb-3 line-clamp-2 transition-colors duration-300 text-slate-900",
-          !isPast && "group-hover:text-blue-600"
-        )}>
-          {event.title}
-        </h3>
-        <p className="text-slate-600 mb-6 flex-grow line-clamp-3 leading-relaxed">
-          {event.description}
-        </p>
-        
-        {!isPast ? (
-          <div className="mt-auto pt-4 border-t border-slate-100">
-            <Link to={`/events/${event.id}`} className="w-full py-3 rounded-xl bg-blue-50 text-blue-600 font-bold hover:bg-blue-100 transition-colors flex items-center justify-center gap-2">
-              Learn More
-            </Link>
-          </div>
-        ) : (
-          <div className="mt-auto pt-4 border-t border-slate-100">
-            <Link to={`/events/${event.id}`} className="w-full py-3 rounded-xl bg-slate-50 text-slate-600 font-bold hover:bg-slate-100 transition-colors flex items-center justify-center gap-2">
-              View Details
-            </Link>
-          </div>
-        )}
-      </div>
-    </motion.div>
   );
 }

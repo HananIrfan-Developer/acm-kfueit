@@ -1,175 +1,115 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { motion } from 'motion/react';
-import { Menu, X, LogIn, UserPlus, LogOut, User } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { cn } from '../lib/utils';
-import { supabase } from '../supabase';
-import toast from 'react-hot-toast';
+import { Link, useLocation } from 'react-router-dom';
+import { Menu, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
-
+  const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut();
-      toast.success("Logged out successfully");
-      navigate('/');
-    } catch (error) {
-      toast.error("Failed to log out");
-    }
-  };
+  useEffect(() => {
+    setIsOpen(false);
+  }, [location]);
 
-  const navLinks = [
+  const links = [
     { name: 'Home', path: '/' },
+    { name: 'About', path: '/about' },
+    { name: 'Committee', path: '/committee' },
     { name: 'Events', path: '/events' },
-    { name: 'Members', path: '/members' },
+    { name: 'News', path: '/news' },
+    { name: 'Join ACM', path: '/join' },
     { name: 'Contact', path: '/contact' },
   ];
 
   return (
-    <nav className="sticky top-0 z-50 w-full backdrop-blur-xl bg-white/70 border-b border-slate-200/50 transition-colors duration-300">
+    <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-[#020617]/80 backdrop-blur-lg border-b border-white/10 shadow-lg' : 'bg-transparent'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-20 items-center">
-          <div className="flex-shrink-0 flex items-center gap-2">
-            <Link to="/" className="flex items-center gap-3">
-              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPHaOyU7EMjnlbQp59hxvBpuJ7fQ2DDu6zCQ&s" alt="ACM KFUEIT Logo" className="h-12 w-auto object-contain rounded-full" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-              <span className="font-bold text-xl text-slate-900 tracking-tight hidden sm:block">
-                ACM <span className="text-blue-600">KFUEIT</span>
-              </span>
+        <div className="flex justify-between items-center h-20">
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-[0_0_15px_rgba(59,130,246,0.5)] overflow-hidden">
+              <img loading="lazy" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPHaOyU7EMjnlbQp59hxvBpuJ7fQ2DDu6zCQ&s" alt="ACM Logo" className="w-full h-full object-contain" />
+            </div>
+            <span className="font-bold text-xl tracking-tight text-white group-hover:text-blue-400 transition-colors">
+              ACM KFUEIT
+            </span>
+          </Link>
+
+          {/* Desktop Nav */}
+          <div className="hidden md:flex items-center space-x-1 lg:space-x-4">
+            {links.map((link) => (
+              <Link
+                key={link.name}
+                to={link.path}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  location.pathname === link.path
+                    ? 'text-blue-400 bg-blue-500/10'
+                    : 'text-slate-300 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                {link.name}
+              </Link>
+            ))}
+            <Link
+              to="/signup"
+              className="ml-4 px-6 py-2.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_rgba(37,99,235,0.6)]"
+            >
+              Sign Up
             </Link>
           </div>
 
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={cn(
-                  "text-sm font-medium transition-colors hover:text-blue-600 relative",
-                  location.pathname === link.path 
-                    ? "text-blue-600" 
-                    : "text-slate-600"
-                )}
-              >
-                {link.name}
-                {location.pathname === link.path && (
-                  <motion.div layoutId="underline" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-blue-600 rounded-full" />
-                )}
-              </Link>
-            ))}
-            
-            <div className="flex items-center gap-4 pl-4 border-l border-slate-200">
-              {user ? (
-                <div className="flex items-center gap-4">
-                  {user.email === 'hananirfan81@gmail.com' && (
-                    <Link to="/admin/dashboard" className="text-sm font-medium text-blue-600 hover:underline">
-                      Dashboard
-                    </Link>
-                  )}
-                  <div className="flex items-center gap-2 text-sm font-medium text-slate-600">
-                    <User size={16} className="text-blue-600" />
-                    <span className="hidden lg:block">{user.email}</span>
-                  </div>
-                  <button onClick={handleLogout} className="text-sm font-medium text-slate-600 hover:text-red-600 flex items-center gap-1 transition-colors">
-                    <LogOut size={16} /> Logout
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <Link to="/login" className="text-sm font-medium text-slate-600 hover:text-blue-600 flex items-center gap-1">
-                    <LogIn size={16} /> Login
-                  </Link>
-                  <Link to="/signup" className="text-sm font-medium px-4 py-2 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all flex items-center gap-1 border border-blue-100">
-                    <UserPlus size={16} /> Sign Up
-                  </Link>
-                </>
-              )}
-            </div>
-          </div>
-
           {/* Mobile menu button */}
-          <div className="md:hidden flex items-center gap-4">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="text-slate-600 hover:text-blue-600"
-            >
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="md:hidden p-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/5"
+          >
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
       </div>
 
       {/* Mobile Nav */}
-      {isOpen && (
-        <motion.div 
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="md:hidden bg-white/95 backdrop-blur-xl border-b border-slate-200"
-        >
-          <div className="px-4 pt-2 pb-6 space-y-2">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                onClick={() => setIsOpen(false)}
-                className={cn(
-                  "block px-4 py-3 rounded-xl text-base font-medium transition-all",
-                  location.pathname === link.path
-                    ? "bg-blue-50 text-blue-600 border border-blue-100"
-                    : "text-slate-600 hover:bg-slate-50"
-                )}
-              >
-                {link.name}
-              </Link>
-            ))}
-            <div className="pt-4 mt-4 border-t border-slate-200 flex flex-col gap-3">
-              {user ? (
-                <>
-                  <div className="px-4 py-2 text-sm text-slate-500 flex items-center gap-2">
-                    <User size={16} /> {user.email}
-                  </div>
-                  {user.email === 'hananirfan81@gmail.com' && (
-                    <Link to="/admin/dashboard" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-center rounded-xl bg-blue-600 text-white font-medium">
-                      Dashboard
-                    </Link>
-                  )}
-                  <button onClick={() => { handleLogout(); setIsOpen(false); }} className="block px-4 py-3 text-center rounded-xl border border-red-200 text-red-600 font-medium hover:bg-red-50">
-                    Logout
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link to="/login" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-center rounded-xl border border-slate-200 font-medium">
-                    Login
-                  </Link>
-                  <Link to="/signup" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-center rounded-xl bg-blue-600 text-white font-medium">
-                    Sign Up
-                  </Link>
-                </>
-              )}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden bg-[#0f172a] border-b border-white/10"
+          >
+            <div className="px-4 pt-2 pb-6 space-y-1">
+              {links.map((link) => (
+                <Link
+                  key={link.name}
+                  to={link.path}
+                  className={`block px-4 py-3 rounded-xl text-base font-medium ${
+                    location.pathname === link.path
+                      ? 'bg-blue-500/20 text-blue-400'
+                      : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              ))}
+              <div className="pt-2 pb-1 border-t border-white/10 mt-2">
+                <Link
+                  to="/signup"
+                  className="block px-4 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-base font-bold text-center transition-colors shadow-lg"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Sign Up
+                </Link>
+              </div>
             </div>
-          </div>
-        </motion.div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }

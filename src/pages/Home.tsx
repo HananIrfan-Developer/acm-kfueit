@@ -1,587 +1,219 @@
-import { motion, AnimatePresence } from 'motion/react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Code, Globe, Users, Zap, ChevronRight, Quote, ChevronLeft, CalendarIcon, X, PlayCircle, Star } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { motion } from 'motion/react';
 import { supabase } from '../supabase';
-
-const testimonials = [
-  {
-    id: 1,
-    content: "Joining ACM KFUEIT was the best decision of my university life. The workshops and events helped me build a strong foundation in competitive programming and web development.",
-    author: "Hamza Arshad",
-    role: "Computer engineering student, President of this society",
-    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Hamza"
-  },
-  {
-    id: 2,
-    content: "The leadership opportunities provided by the chapter are unparalleled. I learned how to manage teams, organize large-scale events, and network with industry professionals.",
-    author: "Hanan Irfan",
-    role: "Computer Science Student",
-    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Hanan"
-  },
-  {
-    id: 3,
-    content: "ACM KFUEIT is not just a society; it's a community of passionate tech enthusiasts. The collaborative environment here pushes you to learn and grow every single day.",
-    author: "Fatima Noor",
-    role: "IT Student",
-    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Fatima"
-  }
-];
+import { Users, Calendar, Target, Globe, Lightbulb, Zap, ArrowRight, Shield, Quote, Mail } from 'lucide-react';
 
 export function Home() {
-  const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
-  const [currentTestimonial, setCurrentTestimonial] = useState(0);
-  const [error, setError] = useState<string | null>(null);
-  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
-  const [motw, setMotw] = useState<any>(null);
+  const [events, setEvents] = useState<any[]>([]);
+  const [committee, setCommittee] = useState<any[]>([]);
 
   useEffect(() => {
-    const fetchMotw = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('members')
-          .select('*')
-          .eq('team', 'Member of the Week')
-          .limit(1)
-          .single();
-        if (data) setMotw(data);
-      } catch (err) {
-        console.error("No MOTW found");
-      }
-    };
-    fetchMotw();
-  }, []);
-
-  useEffect(() => {
-    if (window.location.hash === '#motw' && motw) {
-      setTimeout(() => {
-        const element = document.getElementById('motw');
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 500); // Wait for render
+    async function fetchData() {
+      const { data: eData } = await supabase.from('events').select('*').order('date', { ascending: false }).limit(1);
+      if (eData) setEvents(eData);
+      
+      const { data: mData } = await supabase.from('members').select('*').in('role', ['Supervisor', 'President', 'Vice President']).order('sort_order').limit(3);
+      if (mData) setCommittee(mData);
     }
-  }, [motw]);
-
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('events')
-          .select('*')
-          .eq('status', 'upcoming')
-          .order('date', { ascending: true })
-          .limit(3);
-          
-        if (error) throw error;
-        setUpcomingEvents(data || []);
-      } catch (error: any) {
-        console.error("Error fetching events:", error);
-        setError("Failed to load events. Please try again later.");
-      }
-    };
-    fetchEvents();
+    fetchData();
   }, []);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const nextTestimonial = () => {
-    setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
-  };
-
-  const prevTestimonial = () => {
-    setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-  };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors duration-300 overflow-hidden">
-      
-      {/* Welcome Modal */}
-      <AnimatePresence>
-        {showWelcomeModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowWelcomeModal(false)}
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden z-10"
-            >
-              <button
-                onClick={() => setShowWelcomeModal(false)}
-                className="absolute top-4 right-4 w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-600 transition-colors z-20"
-              >
-                <X size={20} />
-              </button>
-              
-              <div className="p-8 sm:p-12 text-center">
-                <div className="w-24 h-24 mx-auto mb-6 rounded-full overflow-hidden border-4 border-blue-100 shadow-lg">
-                  <img src="https://scontent.fryk5-1.fna.fbcdn.net/v/t39.30808-6/672598077_122217466724515234_1960607746809313137_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=13d280&_nc_eui2=AeFGjH2vX3iKftZSjUDHFf_erEiJREwcbi2sSIlETBxuLTcT7NRPSJ3OZ6HJcyZ_wZoEbp0_pMM6wP6Ba52-8mro&_nc_ohc=0v9NqgkagIkQ7kNvwHTMQmH&_nc_oc=AdrmCePOzyJOZvvj7TTv5LAZh_V-QECyzoT5uk7sUYIBz224_hi_-GUWPevIXI8AJ7I&_nc_zt=23&_nc_ht=scontent.fryk5-1.fna&_nc_gid=ywyUGyo97Gi6tSO59vJtjg&_nc_ss=7a3a8&oh=00_Af33066zkPm_xshtv02cKyFdi9oBWXJSUEzzi_VflR8c_A&oe=69E58649" />
-                </div>
-                <h3 className="text-3xl font-extrabold text-slate-900 mb-2">Welcome to ACM KFUEIT!</h3>
-                <p className="text-blue-600 font-bold mb-6 uppercase tracking-wider text-sm">Message from the President</p>
-                <div className="text-lg text-slate-600 leading-relaxed mb-8 space-y-4">
-                  <p>
-                    Hello everyone! I am <strong>Hamza Arshad</strong>, President of the ACM KFUEIT Student Chapter.
-                  </p>
-                  <p>
-                    Today marks a special milestone as we officially launch our new platform. Our goal has always been to create a community where students can <strong>Learn, Build, Innovate, and Connect</strong>. 
-                  </p>
-                  <p>
-                    Whether you are a beginner taking your first steps in tech, or an experienced developer looking to collaborate, there is a place for you here. Let's shape the future of technology together!
-                  </p>
-                </div>
-                <button
-                  onClick={() => setShowWelcomeModal(false)}
-                  className="px-8 py-4 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20"
-                >
-                  Let's Get Started!
-                </button>
-              </div>
-            </motion.div>
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Radiant Backgrounds */}
+      <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[1000px] h-[1000px] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute top-1/2 left-0 -translate-x-1/2 w-[800px] h-[800px] bg-cyan-600/10 rounded-full blur-[100px] pointer-events-none"></div>
+
+      {/* 1. Hero Section */}
+      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }}>
+          <div className="text-blue-400 font-bold tracking-widest text-sm mb-4 uppercase">ACM KFUEIT STUDENT CHAPTER</div>
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-[1.1] uppercase">
+            Advancing<br/>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">Technology.</span><br/>
+            Empowering<br/>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">Students.</span>
+          </h1>
+          <p className="text-slate-400 text-lg mb-8 max-w-lg leading-relaxed">
+            ACM KFUEIT is a student chapter of the Association for Computing Machinery, dedicated to advancing computing as a science and a profession.
+          </p>
+          <div className="flex flex-wrap gap-4">
+            <Link to="/join" className="px-8 py-4 bg-blue-600 hover:bg-blue-500 rounded-xl text-white font-bold transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)] text-lg">Join ACM</Link>
+            <Link to="/events" className="px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white font-bold transition-all text-lg">Explore Events</Link>
           </div>
-        )}
-      </AnimatePresence>
-
-      {/* Hero Section */}
-      <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
-        <div className="absolute inset-0 bg-slate-50 z-0">
-          {/* Subtle background pattern or gradient */}
-          <div className="absolute top-0 right-0 -translate-y-12 translate-x-1/3 w-[800px] h-[800px] bg-blue-100/50 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 translate-y-1/3 -translate-x-1/3 w-[600px] h-[600px] bg-teal-50/50 rounded-full blur-3xl"></div>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
-            
-            {/* Text Content - Left Side */}
-            <motion.div
-              initial={{ opacity: 0, x: -40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="max-w-2xl"
-            >
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-sm font-bold mb-6">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-                </span>
-                ACM KFUEIT CHAPTER
-              </div>
-              
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 leading-[1.1] text-slate-900">
-                Extraordinary <br className="hidden md:block" />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500">learning & innovation</span>
-              </h1>
-              
-              <p className="text-lg md:text-xl text-slate-600 mb-8 leading-relaxed">
-                ACM is an International society's chapter working in KFUEIT for the development of Candidates. Exploring technology is an unforgettable adventure.
-              </p>
-              
-              <div className="flex flex-wrap items-center gap-4">
-                <Link
-                  to="/signup"
-                  className="w-full sm:w-auto px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2"
-                >
-                  Join the Community <ArrowRight size={18} />
-                </Link>
-                <Link
-                  to="/events"
-                  className="w-full sm:w-auto px-8 py-4 rounded-xl bg-white hover:bg-slate-50 text-slate-900 border border-slate-200 font-bold transition-all flex items-center justify-center gap-2"
-                >
-                  View Events
-                </Link>
-                <button
-                  onClick={() => setShowWelcomeModal(true)}
-                  className="w-full sm:w-auto px-8 py-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold transition-all shadow-[0_0_15px_rgba(15,23,42,0.3)] hover:shadow-[0_0_25px_rgba(15,23,42,0.5)] flex items-center justify-center gap-2 relative overflow-hidden group"
-                >
-                  <span className="absolute inset-0 w-full h-full bg-white/10 group-hover:animate-pulse rounded-xl"></span>
-                  <PlayCircle size={18} className="relative z-10 text-teal-400" /> 
-                  <span className="relative z-10">Launch Day Welcome</span>
-                </button>
-              </div>
-
-              <div className="mt-10 flex items-center gap-6 text-sm font-medium text-slate-500">
-                <div className="flex items-center gap-2">
-                  <Code size={18} className="text-blue-600" /> Development
-                </div>
-                <div className="flex items-center gap-2">
-                  <Users size={18} className="text-teal-500" /> Networking
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Image Content - Right Side */}
-            <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              className="relative lg:ml-auto w-full max-w-lg mx-auto lg:max-w-none"
-            >
-              <div className="relative aspect-[4/3] sm:aspect-[4/3] lg:aspect-[4/5] xl:aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl border border-white/20">
-                <img 
-                  src="https://scontent.fryk5-1.fna.fbcdn.net/v/t39.30808-6/662811876_122216123378515234_5314113284772806381_n.jpg?stp=dst-jpg_p180x540_tt6&_nc_cat=104&ccb=1-7&_nc_sid=13d280&_nc_eui2=AeFhaMZMXpuzOkixw8k0cCLZKSUXAwKGgtEpJRcDAoaC0QhDI72DbxX54Zz1u_i0u0HOO4j70i0xscLod8S2MdZK&_nc_ohc=H-6fzVKumugQ7kNvwFxbcAS&_nc_oc=AdpJIbTxnHPdQ-rNDNIMt6dGsyzTcN3_P-sATIuQZJO1Conpm4ZnbbWlgnHeFAiroUw&_nc_zt=23&_nc_ht=scontent.fryk5-1.fna&_nc_gid=_yNA0MkgQPRf1y06GUu8yw&_nc_ss=7b2a8&oh=00_Af0w5Mzy5SJFLCjaCHzi4LBCgERGrQVax1X9MLxEOYxr3w&oe=69F81490"
-                  alt="ACM Team"
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent"></div>
-              </div>
-              
-              {/* Floating Badge */}
-              <motion.div 
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -bottom-6 -left-6 sm:-left-10 bg-white p-4 rounded-2xl shadow-xl border border-slate-100 flex items-center gap-4"
-              >
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
-                  <Users size={24} />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-slate-900">72+</div>
-                  <div className="text-sm font-medium text-slate-500">Active Members</div>
-                </div>
-              </motion.div>
-            </motion.div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="py-12 relative z-20 -mt-16">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 p-8 grid grid-cols-2 md:grid-cols-4 gap-8 text-center"
+        </motion.div>
+        
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, delay: 0.2 }} className="relative aspect-square w-full max-w-[400px] mx-auto lg:mr-0 flex items-center justify-center">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-full blur-[80px] z-0"></div>
+          <video 
+            autoPlay 
+            loop 
+            muted 
+            playsInline
+          
+            controls={false}
+            className="relative z-10 w-full h-full object-contain scale-125 hover:scale-[1.35] transition-transform duration-700 pointer-events-none drop-shadow-[0_0_30px_rgba(37,99,235,0.4)]"
+            style={{ mixBlendMode: 'screen' }}
           >
-            <div>
-              <div className="text-3xl md:text-4xl font-bold text-slate-900 mb-1">72+</div>
-              <div className="text-sm text-slate-500 font-medium">Total Members</div>
-            </div>
-            <div>
-              <div className="text-3xl md:text-4xl font-bold text-slate-900 mb-1">10+</div>
-              <div className="text-sm text-slate-500 font-medium">Events Hosted</div>
-            </div>
-            <div>
-              <div className="text-3xl md:text-4xl font-bold text-slate-900 mb-1">10+</div>
-              <div className="text-sm text-slate-500 font-medium">Workshops</div>
-            </div>
-            <div>
-              <div className="text-3xl md:text-4xl font-bold text-slate-900 mb-1">4.9</div>
-              <div className="text-sm text-slate-500 font-medium">Average Rating</div>
-            </div>
-          </motion.div>
-        </div>
+             <source src="130273-746686709_medium.mp4" type="video/mp4"/>
+             Your browser does not support the video tag.
+          </video>
+        </motion.div>
       </section>
 
-
-
-      {/* Upcoming Events Preview */}
-      <section className="py-24 relative bg-slate-50">
+      {/* 2. Stats Section */}
+      <section className="py-12 border-y border-white/5 bg-white/5 backdrop-blur-sm relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6"
-          >
-            <div>
-              <div className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Featured Events</div>
-              <h2 className="text-4xl md:text-5xl font-bold text-slate-900">Our upcoming events</h2>
-            </div>
-            <Link to="/events" className="group flex items-center gap-2 text-slate-600 font-medium hover:text-blue-600 transition-colors">
-              View All Events 
-              <span className="group-hover:translate-x-1 transition-transform"><ChevronRight size={20} /></span>
-            </Link>
-          </motion.div>
-
-          {error ? (
-            <div className="text-center py-16 bg-red-50 rounded-3xl border border-red-100 shadow-sm">
-              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-200">
-                <span className="text-red-500 text-2xl font-bold">!</span>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {[
+              { num: '800+', label: 'Members', icon: <Users className="text-blue-400" /> },
+              { num: '50+', label: 'Events', icon: <Calendar className="text-cyan-400" /> },
+              { num: '15+', label: 'Projects', icon: <Target className="text-blue-400" /> },
+              { num: '10+', label: 'Workshops', icon: <Lightbulb className="text-cyan-400" /> },
+            ].map((stat, i) => (
+              <div key={i} className="flex flex-col items-center text-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-blue-900/30 flex items-center justify-center border border-blue-500/20">{stat.icon}</div>
+                <div className="text-3xl font-bold text-white">{stat.num}</div>
+                <div className="text-slate-400 text-sm uppercase tracking-wider">{stat.label}</div>
               </div>
-              <p className="text-red-600 text-lg">{error}</p>
-            </div>
-          ) : (
-            <div className="flex flex-col lg:flex-row gap-8">
-              <div className={`flex-grow ${motw ? 'lg:w-2/3' : 'w-full'}`}>
-                {upcomingEvents.length > 0 ? (
-                  <div className={`grid grid-cols-1 ${motw ? 'md:grid-cols-2' : 'md:grid-cols-2 lg:grid-cols-3'} gap-6`}>
-                    {upcomingEvents.slice(0, motw ? 2 : 3).map((event, i) => (
-                      <motion.div
-                        key={event.id}
-                        initial={{ opacity: 0, y: 40 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6, delay: i * 0.1 }}
-                        className="group rounded-3xl overflow-hidden bg-white shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-500 flex flex-col h-full"
-                      >
-                        <div className="aspect-[4/3] overflow-hidden relative m-3 rounded-2xl flex-shrink-0">
-                          <img 
-                            src={(event.image_urls && event.image_urls.length > 0) ? event.image_urls[0] : (event.image_url || `https://picsum.photos/seed/${event.id}/800/600`)} 
-                            alt={event.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                            referrerPolicy="no-referrer"
-                          />
-                          <div className="absolute top-4 left-4 z-20 px-3 py-1.5 bg-white/90 backdrop-blur-sm text-slate-900 text-xs font-bold rounded-full shadow-sm">
-                            {new Date(event.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                          </div>
-                        </div>
-                        <div className="p-6 pt-2 flex flex-col flex-grow">
-                          <h3 className="text-xl font-bold mb-2 line-clamp-1 text-slate-900">{event.title}</h3>
-                          <p className="text-slate-500 line-clamp-2 mb-6 text-sm leading-relaxed flex-grow">
-                            {event.description}
-                          </p>
-                          <Link to={`/events/${event.id}`} className="inline-flex items-center justify-center w-full py-3 rounded-xl bg-slate-100 text-slate-900 font-medium hover:bg-slate-900 hover:text-white transition-colors mt-auto">
-                            View Details
-                          </Link>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-16 bg-white rounded-3xl border border-slate-100 shadow-sm h-full flex flex-col items-center justify-center">
-                    <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
-                      <CalendarIcon className="text-slate-400" />
-                    </div>
-                    <p className="text-slate-500 text-lg">No upcoming events at the moment. Stay tuned!</p>
-                  </div>
-                )}
-              </div>
-
-              {motw && (
-                <div className="lg:w-1/3" id="motw">
-                  <motion.div
-                    initial={{ opacity: 0, x: 40 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6 }}
-                    className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-3xl p-1 shadow-2xl relative overflow-hidden h-full group flex flex-col scroll-mt-24"
-                  >
-                    <div className="absolute top-0 right-0 p-6 pointer-events-none opacity-20 group-hover:opacity-40 transition-opacity duration-500">
-                      <Star size={120} className="text-white -rotate-12" />
-                    </div>
-                    
-                    <div className="bg-white/10 backdrop-blur-md w-full h-full rounded-[23px] p-8 flex flex-col relative z-10 border border-white/20">
-                      <div className="flex items-center gap-3 mb-8">
-                        <div className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-yellow-900 shadow-lg">
-                          <Star size={20} fill="currentColor" />
-                        </div>
-                        <h3 className="text-xl font-bold text-white tracking-wide">Member of the Week</h3>
-                      </div>
-                      
-                      <div className="flex flex-col items-center text-center mb-6">
-                        <div className="w-32 h-32 rounded-full border-4 border-white shadow-xl overflow-hidden mb-4 bg-slate-100">
-                          <img 
-                            src={motw.image_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${motw.name}`} 
-                            alt={motw.name} 
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <h4 className="text-2xl font-extrabold text-white mb-1">{motw.name}</h4>
-                        <p className="text-blue-200 font-medium text-sm mb-1">{motw.role}</p>
-                        {motw.registration_number && (
-                          <p className="text-blue-300 text-xs font-mono">{motw.registration_number}</p>
-                        )}
-                      </div>
-                      
-                      <div className="bg-white/10 rounded-2xl p-5 border border-white/10 flex-grow mt-auto">
-                        <p className="text-blue-50 text-sm italic leading-relaxed">
-                          "{motw.social_links?.contribution}"
-                        </p>
-                      </div>
-                    </div>
-                  </motion.div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* How it works / What we do */}
-      <section className="py-24 relative bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl"
-            >
-              <img 
-                src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1000" 
-                alt="Team working" 
-                className="w-full h-full object-cover"
-              />
-            </motion.div>
-            
-            <div className="space-y-12">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
-              >
-                <div className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">How it works</div>
-                <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">One click for you</h2>
-                <p className="text-slate-600 text-lg leading-relaxed">
-                  Join our community to discover your dream career path, where innovation and collaboration meet.
-                </p>
-              </motion.div>
-
-              <div className="space-y-8">
-                {[
-                  { title: "Organize Events", desc: "We help coordinate and manage university events efficiently, making it easier to plan, schedule, and execute activities across different departments and societies.", icon: <Globe size={24} /> },
-                  { title: "Host Webinars & Sessions", desc: "Our platform supports webinars, workshops, and online sessions where students and professionals can share knowledge, learn new skills, and engage with a wider audience.", icon: <Users size={24} /> },
-                  { title: "Collaborate with Societies", desc: "We enable collaboration between different university societies, encouraging teamwork, shared initiatives, and cross-disciplinary projects.", icon: <Code size={24} /> },
-                  { title: "Grow Together", desc: "By bringing students, societies, and external partners onto one platform, we foster a community built on innovation, collaboration, and continuous learning.", icon: <Code size={24} /> },
-                  { title: "Streamlined Communication", desc: "Stay connected through centralized communication channels that keep all members updated about events, collaborations, and announcements.", icon: <Zap size={24} /> }
-                ].map((item, i) => (
-                  <motion.div 
-                    key={i}
-                    initial={{ opacity: 0, x: 20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: i * 0.1 }}
-                    className="flex gap-6 group"
-                  >
-                    <div className="flex-shrink-0 w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-slate-900 group-hover:text-white transition-colors">
-                      {item.icon}
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-slate-900 mb-2">{item.title}</h3>
-                      <p className="text-slate-500 leading-relaxed">{item.desc}</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="py-24 relative bg-slate-50 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <div className="text-sm font-bold text-blue-600 uppercase tracking-wider mb-2">Testimonials</div>
-            <h2 className="text-4xl md:text-5xl font-bold text-slate-900">What our members say</h2>
-          </motion.div>
-
-          <div className="relative max-w-4xl mx-auto">
-            <div className="absolute top-1/2 -translate-y-1/2 -left-4 md:-left-12 z-20">
-              <button 
-                onClick={prevTestimonial}
-                className="w-12 h-12 rounded-full bg-white shadow-md border border-slate-100 flex items-center justify-center text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition-colors"
-              >
-                <ChevronLeft size={24} />
-              </button>
-            </div>
-            
-            <div className="absolute top-1/2 -translate-y-1/2 -right-4 md:-right-12 z-20">
-              <button 
-                onClick={nextTestimonial}
-                className="w-12 h-12 rounded-full bg-white shadow-md border border-slate-100 flex items-center justify-center text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition-colors"
-              >
-                <ChevronRight size={24} />
-              </button>
-            </div>
-
-            <div className="overflow-hidden px-4 py-8">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentTestimonial}
-                  initial={{ opacity: 0, x: 50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -50 }}
-                  transition={{ duration: 0.4, ease: "easeInOut" }}
-                  className="bg-white rounded-3xl p-8 md:p-12 shadow-lg border border-slate-100 text-center relative"
-                >
-                  <Quote className="absolute top-8 left-8 text-blue-100 w-16 h-16 -z-10 rotate-180" />
-                  <p className="text-xl md:text-2xl text-slate-700 leading-relaxed mb-10 italic">
-                    "{testimonials[currentTestimonial].content}"
-                  </p>
-                  <div className="flex flex-col items-center justify-center">
-                    <h4 className="text-lg font-bold text-slate-900">{testimonials[currentTestimonial].author}</h4>
-                    <p className="text-slate-500 text-sm">{testimonials[currentTestimonial].role}</p>
+      {/* 3. Content Grid (Events & News) */}
+      <section className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          <div className="lg:col-span-2">
+            <h2 className="text-sm font-bold text-slate-400 mb-6 uppercase tracking-widest">UPCOMING EVENT</h2>
+            {events.length > 0 ? (
+              <Link to={`/events/${events[0].id}`} className="block group h-full">
+                <div className="glass-panel p-2 rounded-3xl h-full border-blue-500/20 hover:border-blue-500/50 transition-colors">
+                  <div className="relative aspect-video rounded-2xl overflow-hidden mb-6">
+                    <img loading="lazy" src={events[0].image_url || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87'} alt="Event" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent opacity-80"></div>
                   </div>
-                </motion.div>
-              </AnimatePresence>
-            </div>
-            
-            <div className="flex justify-center gap-2 mt-6">
-              {testimonials.map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setCurrentTestimonial(idx)}
-                  className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${idx === currentTestimonial ? 'bg-blue-600 w-8' : 'bg-slate-300 hover:bg-slate-400'}`}
-                  aria-label={`Go to testimonial ${idx + 1}`}
-                />
+                  <div className="px-6 pb-6">
+                    <h3 className="text-2xl font-bold text-white mb-4">{events[0].title}</h3>
+                    <div className="flex gap-4 text-sm text-slate-400 mb-6">
+                      <span className="flex items-center gap-1"><Calendar size={14} className="text-blue-400" /> {new Date(events[0].date).toLocaleDateString()}</span>
+                      <span className="flex items-center gap-1"><Shield size={14} className="text-blue-400" /> KFUEIT, Rahim Yar Khan</span>
+                    </div>
+                    <span className="text-blue-400 font-bold flex items-center gap-2">Register Now <ArrowRight size={16} /></span>
+                  </div>
+                </div>
+              </Link>
+            ) : (
+              <div className="glass-panel p-10 rounded-3xl text-center text-slate-400 h-full flex items-center justify-center">No upcoming events.</div>
+            )}
+          </div>
+
+          <div>
+            <h2 className="text-sm font-bold text-slate-400 mb-6 uppercase tracking-widest">LATEST NEWS</h2>
+            <div className="glass-panel rounded-3xl p-8 h-full flex flex-col gap-6">
+              {[
+                { title: 'ACM KFUEIT Hosted an Amazing Seminar on AI & ML', date: 'May 11, 2026' },
+                { title: 'Our Team Won at CodeXtreme Competition 2026', date: 'May 05, 2026' },
+                { title: 'Annual General Meeting Spring 2026', date: 'April 10, 2026' }
+              ].map((news, i) => (
+                <Link to="/news" key={i} className="group block border-b border-white/5 pb-6 last:border-0 last:pb-0">
+                  <h4 className="text-white font-bold group-hover:text-blue-400 transition-colors mb-2 line-clamp-2 leading-snug">{news.title}</h4>
+                  <p className="text-xs text-blue-400 uppercase tracking-widest font-bold">{news.date}</p>
+                </Link>
               ))}
+              <Link to="/news" className="text-blue-400 text-sm font-bold flex items-center gap-2 mt-auto pt-4">View All News <ArrowRight size={14} /></Link>
             </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* 4. Why Join */}
+      <section className="py-24 bg-[#050b1a] border-y border-white/5 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-white mb-4 uppercase tracking-widest">WHY JOIN ACM KFUEIT?</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              { icon: <Lightbulb />, title: 'Learn', desc: 'Enhance your technical skills and knowledge.' },
+              { icon: <Globe />, title: 'Connect', desc: 'Network with peers and industry professionals.' },
+              { icon: <Zap />, title: 'Grow', desc: 'Personal and professional development opportunities.' },
+              { icon: <Target />, title: 'Lead', desc: 'Take initiatives and lead impactful projects.' }
+            ].map((item, i) => (
+              <div key={i} className="flex flex-col items-center text-center gap-4 glass-panel p-8 rounded-3xl hover:-translate-y-2 transition-transform">
+                <div className="w-16 h-16 rounded-2xl bg-blue-900/30 border border-blue-500/20 text-blue-400 flex items-center justify-center">{item.icon}</div>
+                <h4 className="text-xl font-bold text-white">{item.title}</h4>
+                <p className="text-sm text-slate-400">{item.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
+
+      {/* 5. Testimonials Spotlight */}
+      <section className="py-24 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+         <Quote size={64} className="mx-auto text-blue-500/20 mb-8" />
+         <h2 className="text-2xl font-bold text-white mb-8">"ACM transformed my university experience. It gave me the practical exposure and leadership skills I needed to succeed."</h2>
+         <div className="flex flex-col items-center justify-center gap-2">
+           <div className="text-center">
+             <div className="text-white font-bold text-xl">Hamza Arshad</div>
+             <div className="text-blue-400 text-sm mt-1">Chapter President</div>
+           </div>
+         </div>
+      </section>
+
+      {/* 6. Executive Committee */}
+      <section className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 border-t border-white/5">
+        <div className="flex justify-between items-end mb-12">
+          <h2 className="text-2xl font-bold text-white uppercase tracking-widest">EXECUTIVE COMMITTEE</h2>
+          <Link to="/committee" className="text-blue-400 text-sm font-bold flex items-center gap-2">View All Members <ArrowRight size={14}/></Link>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {committee.map((member) => (
+            <div key={member.id} className="glass-panel p-6 rounded-3xl text-center flex flex-col items-center group">
+              <div className="w-32 h-32 rounded-full overflow-hidden mb-6 border-2 border-blue-500/30 group-hover:border-blue-400 transition-colors p-1">
+                <img loading="lazy" src={member.image_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${member.name}`} alt={member.name} className="w-full h-full object-cover rounded-full" />
+              </div>
+              <h4 className="text-white font-bold text-lg mb-1">{member.name}</h4>
+              <p className="text-sm text-blue-400">{member.role}</p>
+            </div>
+          ))}
+        </div>
+      </section>
       
-      {/* CTA Section */}
-      <section className="py-24 relative overflow-hidden bg-slate-900">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=2000')] bg-cover bg-center mix-blend-overlay opacity-20"></div>
-        <div className="max-w-4xl mx-auto px-4 relative z-10 text-center text-white">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to shape the future?</h2>
-            <p className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto leading-relaxed">
-              Become a part of the most active tech community at KFUEIT. Enhance your skills, build your network, and create impact.
-            </p>
-            <Link
-              to="/signup"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-white text-slate-900 hover:bg-slate-100 font-bold transition-all shadow-md hover:shadow-lg hover:-translate-y-1"
-            >
-              Join ACM KFUEIT Now
-              <ArrowRight size={20} />
-            </Link>
-          </motion.div>
+      {/* 7. Newsletter Mini-CTA */}
+      <section className="py-24 relative z-10 bg-blue-900/10 border-y border-blue-500/20">
+         <div className="max-w-3xl mx-auto px-4 text-center">
+           <Mail size={40} className="mx-auto text-blue-400 mb-6"/>
+           <h2 className="text-3xl font-bold text-white mb-4 uppercase">Stay in the Loop</h2>
+           <p className="text-slate-400 mb-8">Get notified about upcoming hackathons, seminars, and exclusive tech resources.</p>
+           <form className="flex flex-col sm:flex-row gap-4 justify-center">
+             <input type="email" placeholder="Enter your email" className="px-6 py-4 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-blue-500 w-full sm:w-80" />
+             <button className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg transition-all">Subscribe</button>
+           </form>
+         </div>
+      </section>
+
+      {/* 8. Global Partner */}
+      <section className="py-16 bg-[#020617] relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-8">
+          <div>
+            <h4 className="text-sm font-bold text-slate-400 mb-2 uppercase tracking-widest">OUR GLOBAL PARTNER</h4>
+            <div className="flex items-center gap-4 text-white font-bold text-xl">
+              <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-lg overflow-hidden">
+                <img loading="lazy" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPHaOyU7EMjnlbQp59hxvBpuJ7fQ2DDu6zCQ&s" alt="ACM Logo" className="w-full h-full object-contain" />
+              </div>
+              Association for Computing Machinery
+            </div>
+          </div>
+          <div className="text-slate-400 text-sm max-w-md text-right leading-relaxed">
+            ACM is the world's largest educational and scientific computing society, uniting computing educators, researchers, and professionals.
+          </div>
         </div>
       </section>
     </div>
   );
 }
-
-function CalendarIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-      <line x1="16" y1="2" x2="16" y2="6"></line>
-      <line x1="8" y1="2" x2="8" y2="6"></line>
-      <line x1="3" y1="10" x2="21" y2="10"></line>
-    </svg>
-  );
-}
-

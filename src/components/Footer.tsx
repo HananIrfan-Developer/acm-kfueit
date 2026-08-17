@@ -1,65 +1,55 @@
 import { Link } from 'react-router-dom';
-import { Instagram, Facebook, Mail, MapPin, Linkedin } from 'lucide-react';
+import { Facebook, Twitter, Instagram, Linkedin, Mail } from 'lucide-react';
 
 export function Footer() {
   return (
-    <footer className="bg-slate-50 border-t border-slate-200/50 pt-16 pb-8 transition-colors duration-300 relative overflow-hidden">
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-100/50 rounded-full blur-[120px] pointer-events-none"></div>
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <footer className="bg-[#020617] border-t border-white/10 pt-16 pb-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           <div className="col-span-1 md:col-span-2">
             <Link to="/" className="flex items-center gap-3 mb-6">
-              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPHaOyU7EMjnlbQp59hxvBpuJ7fQ2DDu6zCQ&s" alt="ACM KFUEIT Logo" className="h-12 w-auto object-contain rounded-full" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-              <span className="font-bold text-xl text-slate-900 tracking-tight">
-                ACM <span className="text-blue-600">KFUEIT</span>
-              </span>
+              <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center overflow-hidden">
+                <img loading="lazy" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPHaOyU7EMjnlbQp59hxvBpuJ7fQ2DDu6zCQ&s" alt="ACM Logo" className="w-full h-full object-contain" />
+              </div>
+              <span className="font-bold text-xl text-white">ACM KFUEIT</span>
             </Link>
-            <p className="text-slate-600 max-w-md leading-relaxed">
-              ACM is an International society's chapter working in KFUEIT for the development of Candidates.
-              <br /><br />
-              <strong className="text-blue-600">Learn. Build. Innovate. Connect.</strong>
+            <p className="text-slate-400 max-w-sm mb-6">
+              The official student chapter of the Association for Computing Machinery at Khwaja Fareed University of Engineering and Information Technology.
             </p>
+            <div className="flex gap-4">
+              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-all"><Facebook size={18} /></a>
+              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-blue-400 hover:text-white transition-all"><Twitter size={18} /></a>
+              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-pink-600 hover:text-white transition-all"><Instagram size={18} /></a>
+              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-blue-700 hover:text-white transition-all"><Linkedin size={18} /></a>
+            </div>
           </div>
           
           <div>
-            <h3 className="font-semibold text-slate-900 mb-6 text-lg">Quick Links</h3>
-            <ul className="space-y-3">
-              <li><Link to="/events" className="text-slate-600 hover:text-blue-600 transition-colors">Events</Link></li>
-              <li><Link to="/members" className="text-slate-600 hover:text-blue-600 transition-colors">Members</Link></li>
-              <li><Link to="/contact" className="text-slate-600 hover:text-blue-600 transition-colors">Contact Us</Link></li>
-              <li><Link to="/login" className="text-slate-600 hover:text-blue-600 transition-colors">Login</Link></li>
+            <h4 className="text-white font-bold mb-6 uppercase tracking-wider text-sm">Quick Links</h4>
+            <ul className="space-y-4">
+              <li><Link to="/about" className="text-slate-400 hover:text-blue-400 transition-colors">About Us</Link></li>
+              <li><Link to="/committee" className="text-slate-400 hover:text-blue-400 transition-colors">Committee</Link></li>
+              <li><Link to="/events" className="text-slate-400 hover:text-blue-400 transition-colors">Events</Link></li>
+              <li><Link to="/news" className="text-slate-400 hover:text-blue-400 transition-colors">News</Link></li>
             </ul>
           </div>
-
+          
           <div>
-            <h3 className="font-semibold text-slate-900 mb-6 text-lg">Connect</h3>
+            <h4 className="text-white font-bold mb-6 uppercase tracking-wider text-sm">Legal</h4>
             <ul className="space-y-4">
-              <li className="flex items-center gap-3 text-slate-600">
-                <Mail size={18} className="text-blue-600" />
-                <a href="mailto:acmkfueitt@gmail.com" className="hover:text-blue-600 transition-colors">acmkfueitt@gmail.com</a>
-              </li>
-              <li className="flex items-start gap-3 text-slate-600">
-                <MapPin size={18} className="mt-1 flex-shrink-0 text-blue-600" />
-                <span>KFUEIT, Abu Dhabi Rd, Rahim Yar Khan, Punjab, Pakistan</span>
-              </li>
+              <li><Link to="/terms" className="text-slate-400 hover:text-blue-400 transition-colors">Terms & Conditions</Link></li>
+              <li><Link to="/privacy" className="text-slate-400 hover:text-blue-400 transition-colors">Privacy Policy</Link></li>
+              <li><Link to="/disclaimer" className="text-slate-400 hover:text-blue-400 transition-colors">Disclaimer</Link></li>
             </ul>
-            <div className="flex gap-4 mt-8">
-              <a href="https://www.instagram.com/acm.kfueitt/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 hover:bg-gradient-to-tr hover:from-yellow-400 hover:via-red-500 hover:to-purple-500 hover:text-white transition-all shadow-sm">
-                <Instagram size={18} />
-              </a>
-              <a href="https://www.facebook.com/ACMKfueitStudentChapter" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 hover:bg-blue-600 hover:text-white transition-all shadow-sm">
-                <Facebook size={18} />
-              </a>
-              <a href="https://www.linkedin.com/posts/acm-kfueit-student-chapter_acm-acmkfueit-kfueit-activity-7400566654943969280-rM7s" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 hover:bg-blue-700 hover:text-white transition-all shadow-sm">
-                <Linkedin size={18} />
-              </a>
-            </div>
           </div>
         </div>
         
-        <div className="pt-8 border-t border-slate-200/50 text-center text-slate-500 text-sm">
-          <p>&copy; {new Date().getFullYear()} ACM KFUEIT Student Chapter. All rights reserved.</p>
+        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-slate-500 text-sm">
+            © {new Date().getFullYear()} ACM KFUEIT. All rights reserved.
+          </p>
+          <div className="flex gap-6 text-sm text-slate-500">
+          </div>
         </div>
       </div>
     </footer>

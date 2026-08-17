@@ -1,185 +1,127 @@
-import { useState, FormEvent } from 'react';
 import { motion } from 'motion/react';
-import { supabase } from '../supabase';
-import { Mail, MapPin, Send, Phone } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { Mail, Phone, MapPin, Globe, MessageSquare, Clock, Facebook, Twitter, Instagram, Linkedin, HelpCircle } from 'lucide-react';
 
 export function Contact() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: ''
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!formData.name || !formData.email || !formData.message) {
-      toast.error("Please fill all fields");
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const { error } = await supabase.from('messages').insert([{
-        ...formData,
-      }]);
-      
-      if (error) throw error;
-      
-      toast.success("Message sent successfully!");
-      setFormData({ name: '', email: '', message: '' });
-    } catch (error) {
-      console.error("Error sending message:", error);
-      toast.error("Failed to send message. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors duration-300 py-24 relative overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-blue-100/50 to-transparent pointer-events-none"></div>
-      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-teal-100/50 rounded-full blur-[120px] pointer-events-none"></div>
-
+    <div className="min-h-screen pt-32 pb-20 relative">
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[100px] pointer-events-none"></div>
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
-        <div className="text-center mb-20">
-          <motion.h1 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 text-blue-600"
-          >
-            Get in Touch
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.1 }}
-            className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto"
-          >
-            Have questions or want to collaborate? We'd love to hear from you. Drop us a message below.
-          </motion.p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Contact Info */}
-          <motion.div 
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="space-y-8"
-          >
-            <div className="bg-white p-10 rounded-3xl border border-slate-200 shadow-[0_4px_12px_rgba(0,0,0,0.08)] relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-teal-400"></div>
-              <h3 className="text-3xl font-bold mb-8 text-slate-900">Contact Information</h3>
+        {/* 1. Header */}
+        <section className="mb-16 text-center border-b border-white/10 pb-16">
+          <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-6 uppercase tracking-tight">CONTACT US</h1>
+          <p className="text-slate-400 text-lg max-w-2xl mx-auto">
+            Have questions, ideas, or want to collaborate? We're always open to discussing new projects, creative ideas, or opportunities.
+          </p>
+        </section>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-24">
+          {/* Left Column */}
+          <div className="space-y-8">
+            
+            {/* 2. Contact Info */}
+            <div className="glass-panel p-8 md:p-10 rounded-3xl border-t border-blue-500/20">
+              <h2 className="text-xl font-bold text-white mb-8 uppercase tracking-widest">GET IN TOUCH</h2>
+              
               <div className="space-y-8">
-                <div className="flex items-start gap-6 group">
-                  <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 shadow-sm border border-blue-100">
-                    <Mail size={28} />
+                <div className="flex items-start gap-5">
+                  <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
+                    <Mail size={20} />
                   </div>
                   <div>
-                    <h4 className="font-bold text-xl mb-1 text-slate-900">Email Us</h4>
-                    <p className="text-slate-600">acmkfueitt@gmail.com</p>
+                    <h4 className="text-white font-bold text-sm mb-1 uppercase tracking-wider">Email Address</h4>
+                    <p className="text-slate-400 text-lg">acmkfueitt@gmail.com</p>
                   </div>
                 </div>
-                
-                <div className="flex items-start gap-6 group">
-                  <div className="w-14 h-14 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center flex-shrink-0 group-hover:scale-110 group-hover:bg-teal-500 group-hover:text-white transition-all duration-300 shadow-sm border border-teal-100">
-                    <MapPin size={28} />
+                <div className="flex items-start gap-5">
+                  <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
+                    <Phone size={20} />
                   </div>
                   <div>
-                    <h4 className="font-bold text-xl mb-1 text-slate-900">Visit Us</h4>
-                    <p className="text-slate-600 leading-relaxed">
-                      Khwaja Fareed University of Engineering and Information Technology<br />
-                      Abu Dhabi Rd, Rahim Yar Khan<br />
-                      Punjab, Pakistan
-                    </p>
+                    <h4 className="text-white font-bold text-sm mb-1 uppercase tracking-wider">Phone Line</h4>
+                    <p className="text-slate-400 text-lg">0314 6355102</p>
                   </div>
                 </div>
-
-                <div className="flex items-start gap-6 group">
-                  <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 shadow-sm border border-blue-100">
-                    <Phone size={28} />
+                <div className="flex items-start gap-5">
+                  <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
+                    <MapPin size={20} />
                   </div>
                   <div>
-                    <h4 className="font-bold text-xl mb-1 text-slate-900">Call Us</h4>
-                    <p className="text-slate-600">0314 6355102</p>
+                    <h4 className="text-white font-bold text-sm mb-1 uppercase tracking-wider">Office Location</h4>
+                    <p className="text-slate-400 text-lg leading-relaxed">KFUEIT Main Campus<br/>Rahim Yar Khan, Punjab, Pakistan</p>
                   </div>
                 </div>
               </div>
             </div>
-          </motion.div>
 
-          {/* Contact Form */}
-          <motion.div 
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-          >
-            <form onSubmit={handleSubmit} className="bg-white p-10 rounded-3xl border border-slate-200 shadow-[0_4px_12px_rgba(0,0,0,0.08)] relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-teal-400 to-blue-500"></div>
-              <h3 className="text-3xl font-bold mb-8 text-slate-900">Send a Message</h3>
-              
-              <div className="space-y-6">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-bold text-slate-700 mb-2">Full Name</label>
-                  <input
-                    type="text"
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full px-5 py-4 rounded-xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all shadow-inner"
-                    placeholder="John Doe"
-                    required
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="email" className="block text-sm font-bold text-slate-700 mb-2">Email Address</label>
-                  <input
-                    type="email"
-                    id="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    className="w-full px-5 py-4 rounded-xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all shadow-inner"
-                    placeholder="john@example.com"
-                    required
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="message" className="block text-sm font-bold text-slate-700 mb-2">Message</label>
-                  <textarea
-                    id="message"
-                    rows={5}
-                    value={formData.message}
-                    onChange={(e) => setFormData({...formData, message: e.target.value})}
-                    className="w-full px-5 py-4 rounded-xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none shadow-inner"
-                    placeholder="How can we help you?"
-                    required
-                  ></textarea>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed hover:scale-[1.02]"
-                >
-                  {isSubmitting ? (
-                    <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  ) : (
-                    <>
-                      Send Message
-                      <Send size={20} />
-                    </>
-                  )}
-                </button>
+            {/* 3. Office Hours */}
+            <div className="glass-panel p-8 rounded-3xl flex items-center justify-between">
+              <div>
+                 <h4 className="text-white font-bold uppercase tracking-wider mb-2 flex items-center gap-2"><Clock size={16} className="text-blue-400"/> Office Hours</h4>
+                 <p className="text-slate-400 text-sm">Monday - Friday: 9:00 AM - 4:00 PM</p>
+                 <p className="text-slate-400 text-sm">Saturday & Sunday: Closed</p>
               </div>
+            </div>
+            
+          </div>
+          
+          {/* Right Column: 4. Contact Form */}
+          <div className="glass-panel p-8 md:p-12 rounded-3xl h-full flex flex-col justify-center">
+            <h2 className="text-2xl font-bold text-white mb-8 uppercase tracking-widest border-b border-white/10 pb-4 flex items-center gap-3"><MessageSquare className="text-blue-400"/> SEND A MESSAGE</h2>
+            <form className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">First Name</label>
+                  <input type="text" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 focus:bg-blue-900/10 transition-all" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Last Name</label>
+                  <input type="text" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 focus:bg-blue-900/10 transition-all" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Email Address</label>
+                <input type="email" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 focus:bg-blue-900/10 transition-all" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Your Message</label>
+                <textarea rows={5} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 focus:bg-blue-900/10 transition-all resize-none"></textarea>
+              </div>
+              <button type="submit" className="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all shadow-[0_0_20px_rgba(37,99,235,0.3)] text-center tracking-wide uppercase mt-4">
+                Send Transmission
+              </button>
             </form>
-          </motion.div>
+          </div>
         </div>
+
+        {/* 5. Social Media Hub */}
+        <section className="mb-24 text-center glass-panel p-12 rounded-3xl border-t border-blue-500/20 bg-gradient-to-b from-blue-900/10 to-transparent">
+          <h2 className="text-2xl font-bold text-white mb-4 uppercase tracking-widest">Connect on Socials</h2>
+          <p className="text-slate-400 mb-8 max-w-lg mx-auto">Follow our official channels for real-time updates, event photos, and tech news.</p>
+          <div className="flex justify-center gap-6">
+            <a href="#" className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white hover:border-blue-500 hover:-translate-y-2 transition-all"><Facebook size={24} /></a>
+            <a href="#" className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-blue-400 hover:text-white hover:border-blue-400 hover:-translate-y-2 transition-all"><Twitter size={24} /></a>
+            <a href="#" className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-pink-600 hover:text-white hover:border-pink-500 hover:-translate-y-2 transition-all"><Instagram size={24} /></a>
+            <a href="#" className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-blue-700 hover:text-white hover:border-blue-600 hover:-translate-y-2 transition-all"><Linkedin size={24} /></a>
+          </div>
+        </section>
+
+        {/* 6. Quick FAQ */}
+        <section className="max-w-4xl mx-auto">
+          <h2 className="text-2xl font-bold text-white mb-10 text-center uppercase tracking-widest">COMMON INQUIRIES</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="glass-panel p-6 rounded-2xl">
+              <h4 className="text-white font-bold mb-2 flex items-center gap-2"><HelpCircle size={16} className="text-blue-400"/> Sponsorships</h4>
+              <p className="text-slate-400 text-sm">For corporate sponsorships, please email us directly with the subject line "Sponsorship Request".</p>
+            </div>
+            <div className="glass-panel p-6 rounded-2xl">
+              <h4 className="text-white font-bold mb-2 flex items-center gap-2"><HelpCircle size={16} className="text-blue-400"/> Event Collaborations</h4>
+              <p className="text-slate-400 text-sm">We frequently collaborate with other societies. Send a detailed proposal to our email.</p>
+            </div>
+          </div>
+        </section>
+        
       </div>
     </div>
   );
